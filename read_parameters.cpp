@@ -9,7 +9,7 @@ bool read_parameters(){
 	}
     else{
         fscanf(param, "**** PARAMETERS FILE ****\n\n");
-        fscanf(param, "Number of particles = %d\n", &particles);
+        fscanf(param, "Number of particles = %d\n", &num_particules);
         fscanf(param, "Number of species = %d\n", &species);
         fscanf(param, "Radius of species 1 = %lf\n", &r_1);
         fscanf(param, "Radius of species 2 = %lf\n", &r_2);
@@ -56,7 +56,7 @@ bool read_parameters(){
     Infinite disolution = %s\n\
     Epsilon r = %.2lf\n\
     Temperature = %.2lfK\n\n",\
-    particles, species, r_1, r_2, val_1, val_2, rp_d, diff_c, box_len, dt,\
+    num_particules, species, r_1, r_2, val_1, val_2, rp_d, diff_c, box_len, dt,\
     max_eq_time, max_t_steps, msd_steps, gr_steps,flag, eps_r, temp);
 }
 
@@ -68,6 +68,27 @@ bool read_file_atom_pos(){
         return false;
     }
     else{
-        
+
+        positions = (double*)malloc(num_particules * 3 * sizeof(double));
+
+        for(int i = 0; i < 6; i++){
+            
+            if(i == 3){
+                fscanf(param, "%lf\n", &diameter);
+            }
+            else{
+                fscanf(param, "%*[^\n]\n");
+            }
+            
+        }
+
+        for(int i = 0; i < num_particules; i++){
+
+            fscanf(param, "%lf %lf %lf\n", &positions[i * 3 + 0], &positions[i * 3 + 1], &positions[i * 3 + 2]);
+            
+        }
+       /*  for(int i = 0; i < num_particules; i++){
+            printf("x: %lf \t y: %lf \t z: %lf\n", positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
+        } */
     }
 }

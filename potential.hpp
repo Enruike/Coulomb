@@ -1,9 +1,10 @@
 #pragma once
 #include<math.h>
 #include<stdio.h>
+#include<iostream>
 
 //Clase Partícula
-class Particle
+class Particule
 {
 
     public:
@@ -16,7 +17,15 @@ class Particle
 
 };
 
+double vol_frac; //Volume fraction.
+double delta_gr; //                     !!!(Check if we can vary this delta through parameters file)!!!
+
 extern double temp;
 extern double eps_r;
+extern int num_particules;
+extern double* positions;
+extern double box_len;
+extern double diameter;
 
 extern bool read_parameters();
+extern bool read_file_atom_pos();
