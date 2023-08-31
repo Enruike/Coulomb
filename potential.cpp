@@ -33,9 +33,23 @@ int main(){
     printf("Diameter %lf\n", diameter);
     printf("Max diameter %lf\n", diameter * box_len);
 
-    vol_frac = num_particules * (M_PI / 6.) * pow(diameter, 3);
+    vol_frac = num_particules * (M_PI / 6.) * pow(diameter, 3); //      !!! Check the use of volume fraction
 
     printf("Volume fraction: %lf\n", vol_frac);
+
+    for(int i = 0; i < num_particules; i++){
+        if(i < num_particules / species){
+            particules[i].specie = 1;
+            particules[i].radius = r_1;
+            particules[i].valence = val_1;
+        }
+        else{
+            particules[i].specie = 2;
+            particules[i].radius = r_2;
+            particules[i].valence = val_2;
+        }
+        particules[i].infinite = 0;
+    }
 
     free(positions);
     delete[] particules;

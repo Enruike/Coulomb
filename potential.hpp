@@ -12,7 +12,7 @@ class Particule
     double valence; //Valencia. De modo que q = v * e.
     signed char specie; //Si es especie 1 o 2, incluso 3 si es un macroión.
     double radius; //Radio de la partícula
-    signed short int index; //Índice de la partícula
+    //signed short int index; //Índice de la partícula
     bool infinite; //Homogénea o inhomogénea.
 
 };
@@ -23,6 +23,11 @@ double delta_gr; //                     !!!(Check if we can vary this delta thro
 extern double temp;
 extern double eps_r;
 extern int num_particules;
+extern int species;
+extern double r_1;
+extern double r_2;
+extern double val_1;
+extern double val_2;
 extern double* positions;
 extern double box_len;
 extern double diameter;
