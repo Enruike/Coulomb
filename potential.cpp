@@ -1,5 +1,6 @@
 #include"potential.hpp"
 #include"constants.hpp"
+#include"functions.hpp"
 
 int main(){
     if(!read_parameters()){
@@ -49,6 +50,14 @@ int main(){
             particules[i].valence = val_2;
         }
         particules[i].infinite = 0;
+    }
+
+    unsigned seed = 101013;
+
+    //srand(seed);
+
+    for(int i = 0; i < 3; i++){
+        //printf("%lf\n", rand());
     }
 
     free(positions);

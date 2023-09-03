@@ -6,13 +6,17 @@
 ############################################################################
 
 CC = icc
-file_names = potential.cpp read_parameters.cpp
+GCC = gcc-9 #gcc working version
+file_names = potential.cpp read_parameters.cpp functions.cpp
 ARGS = -diag-disable=10441
 
 all: pfm_coulomb.x
 
 pfm_coulomb.x: $(file_names)
-	$(CC) -O2 $(file_names) -o pfm_coulomb.x $(ARGS)
+	$(CC) -gcc-name=$(GCC) -O2 $(file_names) -o pfm_coulomb.x $(ARGS)
 
 clean:
 	rm -f pfm_coulomb.x
+
+### Notes ###
+# For icpc use -gxx-name=g++-9 version flag
