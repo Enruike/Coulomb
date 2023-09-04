@@ -12,7 +12,8 @@ double val_2; //Valencia para la especie 2.
 double rp_d; //Repulsive core distance.
 double diff_c; //Diffusion coefficient.
 bool disol; //Homogénea o inhomogénea (Disolución infinita).
-double box_len; //Box length.                                   !!!(Check if it is in reduced units)!!!
+double box_len; //Box length.                              !!!(Check if it is in reduced units)!!!
+double half_box; //Half box length.
 double dt; //Delta time dt.
 int max_eq_time; //Max time for equilibration.
 int max_t_steps; //Max time steps.

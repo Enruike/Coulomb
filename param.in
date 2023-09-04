@@ -1,7 +1,7 @@
 **** PARAMETERS FILE ****
 
 Number of particles = 100
-Number of species = 1
+Number of species = 2
 Radius of species 1 = 2.5
 Radius of species 2 = 2.5
 Valence of species 1 = -2.0

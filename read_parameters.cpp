@@ -58,6 +58,8 @@ bool read_parameters(){
     Temperature = %.2lfK\n\n",\
     num_particules, species, r_1, r_2, val_1, val_2, rp_d, diff_c, box_len, dt,\
     max_eq_time, max_t_steps, msd_steps, gr_steps,flag, eps_r, temp);
+
+    half_box = box_len / 2.;
 }
 
 bool read_file_atom_pos(){

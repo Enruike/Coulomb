@@ -16,7 +16,7 @@ pfm_coulomb.x: $(file_names)
 	$(CC) -gcc-name=$(GCC) -O2 $(file_names) -o pfm_coulomb.x $(ARGS)
 
 clean:
-	rm -f pfm_coulomb.x
+	rm -f pfm_coulomb.x movie.xml
 
 ### Notes ###
 # For icpc use -gxx-name=g++-9 version flag

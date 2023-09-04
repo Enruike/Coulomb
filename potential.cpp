@@ -26,9 +26,15 @@ int main(){
     /* Positions x, y, and z are stored in array named positions. 
         We are gonna multiply these positions by reduced length box at once. */
     for(int i = 0; i < num_particules; i++){
-        particules[i].pos_x = positions[i * 3 + 0] * box_len;
-        particules[i].pos_y = positions[i * 3 + 1] * box_len;
-        particules[i].pos_z = positions[i * 3 + 2] * box_len;
+
+        positions[i * 3 + 0] = positions[i * 3 + 0] * box_len;
+        positions[i * 3 + 1] = positions[i * 3 + 1] * box_len;
+        positions[i * 3 + 2] = positions[i * 3 + 2] * box_len;
+
+        particules[i].pos_x = positions[i * 3 + 0];
+        particules[i].pos_y = positions[i * 3 + 1];
+        particules[i].pos_z = positions[i * 3 + 2];
+
     }
 
     printf("Diameter %lf\n", diameter);
@@ -38,30 +44,85 @@ int main(){
 
     printf("Volume fraction: %lf\n", vol_frac);
 
+    char_array = (char*)malloc(num_particules * sizeof(char));
+    radius_array = (double*)malloc(num_particules * sizeof(double));
+    valence_array = (double*)malloc(num_particules * sizeof(double));
+
     for(int i = 0; i < num_particules; i++){
         if(i < num_particules / species){
             particules[i].specie = 1;
             particules[i].radius = r_1;
+            radius_array[i] = r_1;
             particules[i].valence = val_1;
+            valence_array[i] = val_1;
+            char_array[i] = 'A';
         }
         else{
             particules[i].specie = 2;
             particules[i].radius = r_2;
+            radius_array[i] = r_2;
             particules[i].valence = val_2;
+            valence_array[i] = val_2;
+            char_array[i] = 'B';
         }
         particules[i].infinite = 0;
     }
 
+    /* Random variables */
+
     unsigned seed = 101013;
+    double random_number;
+    double ran_num1, ran_num2;
 
-    //srand(seed);
+    //seed the random number generator
+    std::default_random_engine generator(seed);
 
+    //Create a uniform real distribution
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+
+    printf("\t##### random number generator #####\n");
     for(int i = 0; i < 3; i++){
-        //printf("%lf\n", rand());
+        random_number = distribution(generator);
+        printf("%lf\n", random_number);
     }
 
+    printf("\t##### Box Muller generator #####\n");
+    
+    for(int i = 0; i < 10; i++){
+        ran_num1 = distribution(generator);
+        ran_num2 = distribution(generator);
+        printf("%lf\n", box_muller(ran_num1, ran_num2));
+    }
+
+    printf("\t\t#####\n");
+
+    HOOMD_xml_generator();
+
+    //
+    double val_rc = 0.;
+    for(int indx = 0; indx < num_particules; indx++){
+        val_rc += energy_rc_i_all(indx, num_particules);
+    }
+
+    printf("val_rc %lf\n", val_rc);
+
+    double val_el = 0.;
+
+    for(int indx = 0; indx < num_particules; indx ++){
+        val_el += energy_el_i_all(indx, num_particules);
+    }
+    
+    printf("val_el %.6e\n", val_el);
+
+    /* Free dynamic memory arrays */
     free(positions);
+    free(char_array);
+    free(radius_array);
+    free(valence_array);
+
+    /* Destroy class dynamic memory array */
     delete[] particules;
+
     return 0;
     //printf("x for particle 3 is %lf\n", particle[2].pos_x); //Segmentation fault because we erase the array. No more memory.
 }

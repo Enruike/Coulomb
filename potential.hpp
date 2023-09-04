@@ -2,6 +2,7 @@
 #include<math.h>
 #include<stdio.h>
 #include<iostream>
+#include<random>
 
 //Clase Partícula
 class Particule
@@ -19,6 +20,9 @@ class Particule
 
 double vol_frac; //Volume fraction.
 double delta_gr; //                     !!!(Check if we can vary this delta through parameters file)!!!
+char *char_array;
+double *radius_array;
+double *valence_array;
 
 extern double temp;
 extern double eps_r;
@@ -28,7 +32,7 @@ extern double r_1;
 extern double r_2;
 extern double val_1;
 extern double val_2;
-extern double* positions;
+extern double *positions;
 extern double box_len;
 extern double diameter;
 
