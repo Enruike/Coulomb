@@ -9,14 +9,15 @@ bool read_parameters(){
 	}
     else{
         fscanf(param, "**** PARAMETERS FILE ****\n\n");
-        fscanf(param, "Number of particles = %d\n", &num_particules);
+        fscanf(param, "Number of particles = %d\n", &num_particles);
         fscanf(param, "Number of species = %d\n", &species);
         fscanf(param, "Radius of species 1 = %lf\n", &r_1);
         fscanf(param, "Radius of species 2 = %lf\n", &r_2);
         fscanf(param, "Valence of species 1 = %lf\n", &val_1);
         fscanf(param, "Valence of species 2 = %lf\n", &val_2);
         fscanf(param, "Repulsive core distance = %lf\n", &rp_d);
-        fscanf(param, "Diffusion Coefficient = %lf\n", &diff_c);
+        fscanf(param, "Diffusion coefficient = %lf\n", &diff_c);
+        fscanf(param, "Repulsive core sigma = %lf #Hardness\n", &d_rc);
         fscanf(param, "Length of the box = %lf #Length in Angstroms\n", &box_len);
         fscanf(param, "Delta t = %lf #Time step in seconds\n", &dt);
         fscanf(param, "Max equilibration time = %d #Max time for equilibration\n", &max_eq_time);
@@ -46,7 +47,8 @@ bool read_parameters(){
     Valence of species 1 = %.2lf\n\
     Valence of species 2 = %.2lf\n\
     Repulsive core distance = %.2lf\u00c5\n\
-    Diffusion Coefficient = %.2e\n\
+    Diffusion coefficient = %.2e\n\
+    Repulsive core sigma = %.2lf\n\
     Length of the box = %.2lf\u00c5\n\
     Delta t = %.2e s\n\
     Max equilibration time = %d\n\
@@ -56,7 +58,7 @@ bool read_parameters(){
     Infinite disolution = %s\n\
     Epsilon r = %.2lf\n\
     Temperature = %.2lfK\n\n",\
-    num_particules, species, r_1, r_2, val_1, val_2, rp_d, diff_c, box_len, dt,\
+    num_particles, species, r_1, r_2, val_1, val_2, rp_d, diff_c, d_rc,box_len, dt,\
     max_eq_time, max_t_steps, msd_steps, gr_steps,flag, eps_r, temp);
 
     half_box = box_len / 2.;
@@ -71,7 +73,7 @@ bool read_file_atom_pos(){
     }
     else{
 
-        positions = (double*)malloc(num_particules * 3 * sizeof(double));
+        positions = (double*)malloc(num_particles * 3 * sizeof(double));
 
         for(int i = 0; i < 6; i++){
             
@@ -84,12 +86,12 @@ bool read_file_atom_pos(){
             
         }
 
-        for(int i = 0; i < num_particules; i++){
+        for(int i = 0; i < num_particles; i++){
 
             fscanf(param, "%lf %lf %lf\n", &positions[i * 3 + 0], &positions[i * 3 + 1], &positions[i * 3 + 2]);
             
         }
-       /*  for(int i = 0; i < num_particules; i++){
+       /*  for(int i = 0; i < num_particles; i++){
             printf("x: %lf \t y: %lf \t z: %lf\n", positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
         } */
     }

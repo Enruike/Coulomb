@@ -5,7 +5,7 @@
 #include<random>
 
 //Clase Partícula
-class Particule
+class Particle
 {
 
     public:
@@ -26,7 +26,7 @@ double *valence_array;
 
 extern double temp;
 extern double eps_r;
-extern int num_particules;
+extern int num_particles;
 extern int species;
 extern double r_1;
 extern double r_2;
@@ -35,6 +35,16 @@ extern double val_2;
 extern double *positions;
 extern double box_len;
 extern double diameter;
+extern int max_t_steps;
+extern int msd_steps;
+extern double dt;
+extern double diff_c_red;
+extern double diff_c;
+extern double diff_c_red2;
 
 extern bool read_parameters();
 extern bool read_file_atom_pos();
+extern void periodic_distance(double xi, double yi, double zi,
+    double& x_pos, double& y_pos, double& z_pos, double* positions);
+extern double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], int * cells);
+//extern void mi_after_move(int indx, double * positions, double * new_pos, int * cell);

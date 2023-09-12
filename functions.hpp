@@ -2,6 +2,8 @@
 #include<stdlib.h>
 #include<math.h>
 #include<iostream>
+#include<random>
+#include<ctime>
 
 /* Extern variables */
 
@@ -10,10 +12,15 @@ extern char* char_array;
 extern double *radius_array;
 extern double *valence_array;
 
-extern int num_particules;
+extern int num_particles;
 extern double half_box;
 extern double box_len;
 extern double Bjerrum_red;
+extern double Bjerrum_len;
+extern double diff_c;
+extern double diff_c_red;
+extern double diff_c_red2;
+extern double d_rc; //Sigma for the rc potential.
 
 //Repulsive Core
 double energy_rc_i_all(int indx, int np_total);
@@ -23,7 +30,19 @@ double erc(double r, double ri, double rj);
 double energy_el_i_all(int indx, int np_total);
 double eew(double r, double ri, double rj);
 
+//Distance calculator function
+void periodic_distance(double xi, double yi, double zi,
+    double& x_pos, double& y_pos, double& z_pos, double* positions);
+
 //Box Muller Function
 double box_muller(double num_1, double num_2);
 //Movie generator function
 void HOOMD_xml_generator();
+//New position function
+double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], int * cells);
+double frc(double rij, double ri, double rj);
+double few0(double rij, double ri, double rj);
+// Random generator and Box-Muller function.
+double random_muller();
+//check movement
+double mi_after_move(int indx, double& x, double& y, double& z, int * cell);

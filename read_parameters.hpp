@@ -3,14 +3,17 @@
 #include<iostream>
 
 /*Parameters*/
-int num_particules; //número de partículas.
+int num_particles; //número de partículas.
 int species; //Número de especies.
 double r_1; //Radio para la especie 1.
 double r_2; //Radio para la especie 2.
 double val_1; //Valencia para la especie 1.
 double val_2; //Valencia para la especie 2.
 double rp_d; //Repulsive core distance.
+double d_rc; //Sigma for the rc potential.
 double diff_c; //Diffusion coefficient.
+double diff_c_red;
+double diff_c_red2;
 bool disol; //Homogénea o inhomogénea (Disolución infinita).
 double box_len; //Box length.                              !!!(Check if it is in reduced units)!!!
 double half_box; //Half box length.
