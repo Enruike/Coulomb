@@ -317,6 +317,8 @@ double new_pos_function(int indx, double dt, double * indx_positions, double new
             dyij = yi - y_j;
             dzij = zi - z_j;
 
+            //printf("dx:%lf dy:%lf dz:%lf\n", dxij, dyij, dzij);
+
             rij = sqrt(pow(dxij, 2) + pow(dyij, 2) + pow(dzij, 2));
             //printf("rij %lf, dxij %lf, dyij %lf, dzij %lf\n", rij, dxij, dyij, dzij);
             frc_r = frc(rij, radius_array[indx], radius_array[i]);
@@ -457,7 +459,7 @@ double mi_after_move(int indx, double& x, double& y, double& z, int * cell){
         y -= box_len;
         cell[1] += 1;
     }
-    else if(y < - half_box && y >= -3. * half_box){
+    else if(y < -half_box && y >= -3. * half_box){
         y += box_len;
         cell[1] -= 1;
     }
@@ -484,8 +486,4 @@ double mi_after_move(int indx, double& x, double& y, double& z, int * cell){
     //printf("indx %d end mi_after_function x:%lf y:%lf z:%lf\n", indx, x, y, z);
 
     return 0.;
-}
-
-void calculate_energies(){
-    
 }

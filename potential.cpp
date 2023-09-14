@@ -133,9 +133,9 @@ int main(){
 
         for(int i = 0; i < num_particles; i++){
 
-            periodic_distance(xi, yi, zi, x_pos, y_pos, z_pos, &positions[i * 3]);
-
             if(i != indx){
+
+                periodic_distance(xi, yi, zi, x_pos, y_pos, z_pos, &positions[i * 3]);
 
                 dxij = xi - x_pos;
                 dyij = yi - y_pos;
@@ -186,7 +186,7 @@ int main(){
 
     //printf("dt is %.e\n", dt);
     //max_t_steps
-    for(int iter = 0; iter < max_t_steps; iter++){
+    for(int iter = 0; iter < 600000; iter++){
         
         for(int indx = 0; indx < num_particles; indx++){
             
@@ -195,8 +195,6 @@ int main(){
                 printf("iter step %d indx %d\n", iter, indx);
                 exit(1);
             }
-            //printf("indx:%d old positions x:%lf y:%lf z:%lf\n", indx, positions[indx * 3 + 0], positions[indx * 3 + 1], positions[indx * 3 + 2]);
-            //printf("indx:%d new positions x:%lf y:%lf z:%lf\n", indx, new_positions[indx * 3 + 0], new_positions[indx * 3 + 1], new_positions[indx * 3 + 2]);
         }
 
         for(int i = 0; i < num_particles; i++){
@@ -207,26 +205,38 @@ int main(){
             positions[i * 3 + 2] = new_positions[i * 3 + 2];
             //printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
             
+            /*if(iter % 250 == 0 && i == 0){
+                
+                //printf("indx:%d old positions x:%lf y:%lf z:%lf\n", indx, positions[indx * 3 + 0], positions[indx * 3 + 1], positions[indx * 3 + 2]);
+                //printf("indx:%d new positions x:%lf y:%lf z:%lf\n", indx, new_positions[indx * 3 + 0], new_positions[indx * 3 + 1], new_positions[indx * 3 + 2]);
+                //printf("indx:%d old positions x:%.10lf y:%.10lf z:%.10lf\n", i, positions[99 * 3 + 0], positions[99 * 3 + 1], positions[99 * 3 + 2]);
+                //printf("indx:%d new positions x:%.10lf y:%.10lf z:%.10lf\n", i, new_positions[99 * 3 + 0], new_positions[99 * 3 + 1], new_positions[99 * 3 + 2]);
+        
+            }*/
+        
         }
 
-        if(iter % (msd_steps) == 0 && iter != 0){
-            val_rc = 0.;
-            val_el = 0.;
+        if((iter + 1) % (msd_steps) == 0 && iter != 0){
+            
 
             /* Esta sección fue copiada directamente de la parte inicial.
                Aquí se calcula la energía total electrostática y de núcleo
                repulsivo. */
+            
+            val_rc = 0.;
+            val_el = 0.;
+
             for(int indx = 0; indx < num_particles; indx++){
-        
+            
                 xi = positions[indx * 3 + 0];
                 yi = positions[indx * 3 + 1];
                 zi = positions[indx * 3 + 2];        
 
                 for(int i = 0; i < num_particles; i++){
 
-                    periodic_distance(xi, yi, zi, x_pos, y_pos, z_pos, &positions[i * 3]);
-
                     if(i != indx){
+
+                        periodic_distance(xi, yi, zi, x_pos, y_pos, z_pos, &positions[i * 3]);
 
                         dxij = xi - x_pos;
                         dyij = yi - y_pos;
@@ -259,8 +269,8 @@ int main(){
             fclose(repulsive_energy);
             fclose(electric_energy);
 
-            //printf("val_rc %.6e\n", val_rc);
-            //printf("val_el %.6e\n", val_el);
+            printf("val_rc %.6e\n", val_rc);
+            printf("val_el %.6e\n", val_el);
 
         }
     }
