@@ -186,7 +186,7 @@ int main(){
 
     //printf("dt is %.e\n", dt);
     //max_t_steps
-    for(int iter = 0; iter < 600000; iter++){
+    for(int iter = 0; iter < 100000; iter++){
         
         for(int indx = 0; indx < num_particles; indx++){
             
@@ -199,11 +199,11 @@ int main(){
 
         for(int i = 0; i < num_particles; i++){
 
-            //printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
+            //if(i == 0 || i == num_particles - 1) printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
             positions[i * 3 + 0] = new_positions[i * 3 + 0];
             positions[i * 3 + 1] = new_positions[i * 3 + 1];
             positions[i * 3 + 2] = new_positions[i * 3 + 2];
-            //printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
+            //if(i == 0 || i == num_particles - 1) printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
             
             /*if(iter % 250 == 0 && i == 0){
                 
@@ -216,8 +216,8 @@ int main(){
         
         }
 
-        if((iter + 1) % (msd_steps) == 0 && iter != 0){
-            
+        //if((iter + 1) % (msd_steps) == 0 && iter != 0){
+        if(iter % 5000 == 0){    
 
             /* Esta sección fue copiada directamente de la parte inicial.
                Aquí se calcula la energía total electrostática y de núcleo
@@ -227,7 +227,8 @@ int main(){
             val_el = 0.;
 
             for(int indx = 0; indx < num_particles; indx++){
-            
+            //for(int indx = 0; indx < 1; indx++){
+
                 xi = positions[indx * 3 + 0];
                 yi = positions[indx * 3 + 1];
                 zi = positions[indx * 3 + 2];        
@@ -248,17 +249,27 @@ int main(){
                             exit(1);
                         }
                         e_el += eew(rij, valence_array[indx], valence_array[i]);
+
+                        //printf("e_rc %lf, e_el %lf\n",0.5 * (e_rc / num_particles), 0.5 * (e_el / num_particles));
                         
                     }
                 }
 
-                val_rc += 0.5 * (e_rc / num_particles);
-                val_el += 0.5 * (e_el / num_particles);
-          
+                val_rc += e_rc;
+                val_el += e_el;
+
+                //printf("e_rc %lf, e_el %lf\n",0.5 * (e_rc / num_particles), 0.5 * (e_el / num_particles));
+
                 e_rc = 0;
                 e_el = 0;
 
             }
+
+            val_rc *= 0.5 / num_particles;
+            val_el *= 0.5 / num_particles;
+
+            printf("val_rc %.6e\n", val_rc);
+            printf("val_el %.6e\n", val_el);
 
             electric_energy = fopen("electric_energy.out", "a");
             repulsive_energy = fopen("repulsive_energy.out", "a");
@@ -268,9 +279,6 @@ int main(){
 
             fclose(repulsive_energy);
             fclose(electric_energy);
-
-            printf("val_rc %.6e\n", val_rc);
-            printf("val_el %.6e\n", val_el);
 
         }
     }

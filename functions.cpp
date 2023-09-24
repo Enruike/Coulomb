@@ -134,7 +134,7 @@ double erc(double r, double ri, double rj){
 
     double dij;
     double x;
-    double res;
+    double res = 0.;
 
     dij = ri + rj - d_rc;
 
