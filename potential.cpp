@@ -186,7 +186,7 @@ int main(){
 
     //printf("dt is %.e\n", dt);
     //max_t_steps
-    for(int iter = 0; iter < 100000; iter++){
+    for(int iter = 0; iter < 300000; iter++){
         
         for(int indx = 0; indx < num_particles; indx++){
             
@@ -217,7 +217,7 @@ int main(){
         }
 
         //if((iter + 1) % (msd_steps) == 0 && iter != 0){
-        if(iter % 5000 == 0){    
+        if((iter + 1) % 1000 == 0){    
 
             /* Esta sección fue copiada directamente de la parte inicial.
                Aquí se calcula la energía total electrostática y de núcleo
@@ -255,8 +255,8 @@ int main(){
                     }
                 }
 
-                val_rc += e_rc;
-                val_el += e_el;
+                val_rc += e_rc * 0.5 / num_particles;
+                val_el += e_el * 0.5 / num_particles;
 
                 //printf("e_rc %lf, e_el %lf\n",0.5 * (e_rc / num_particles), 0.5 * (e_el / num_particles));
 
@@ -264,9 +264,6 @@ int main(){
                 e_el = 0;
 
             }
-
-            val_rc *= 0.5 / num_particles;
-            val_el *= 0.5 / num_particles;
 
             printf("val_rc %.6e\n", val_rc);
             printf("val_el %.6e\n", val_el);
