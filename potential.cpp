@@ -186,7 +186,7 @@ int main(){
 
     //printf("dt is %.e\n", dt);
     //max_t_steps
-    for(int iter = 0; iter < 300000; iter++){
+    for(int iter = 0; iter < 10000000; iter++){
         
         for(int indx = 0; indx < num_particles; indx++){
             
@@ -199,25 +199,18 @@ int main(){
 
         for(int i = 0; i < num_particles; i++){
 
-            //if(i == 0 || i == num_particles - 1) printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
+            //if((i == 0 || i == num_particles - 1) && (iter + 1) % 5000 == 0) printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
+            //if(i == 99 && ) printf("old %lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
             positions[i * 3 + 0] = new_positions[i * 3 + 0];
             positions[i * 3 + 1] = new_positions[i * 3 + 1];
             positions[i * 3 + 2] = new_positions[i * 3 + 2];
-            //if(i == 0 || i == num_particles - 1) printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
-            
-            /*if(iter % 250 == 0 && i == 0){
-                
-                //printf("indx:%d old positions x:%lf y:%lf z:%lf\n", indx, positions[indx * 3 + 0], positions[indx * 3 + 1], positions[indx * 3 + 2]);
-                //printf("indx:%d new positions x:%lf y:%lf z:%lf\n", indx, new_positions[indx * 3 + 0], new_positions[indx * 3 + 1], new_positions[indx * 3 + 2]);
-                //printf("indx:%d old positions x:%.10lf y:%.10lf z:%.10lf\n", i, positions[99 * 3 + 0], positions[99 * 3 + 1], positions[99 * 3 + 2]);
-                //printf("indx:%d new positions x:%.10lf y:%.10lf z:%.10lf\n", i, new_positions[99 * 3 + 0], new_positions[99 * 3 + 1], new_positions[99 * 3 + 2]);
-        
-            }*/
+            //if(i == 99) printf("new %lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
+            //if((i == 0 || i == num_particles - 1) && (iter + 1) % 5000 == 0) printf("%lf\t%lf\t%lf\n",positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
         
         }
 
         //if((iter + 1) % (msd_steps) == 0 && iter != 0){
-        if((iter + 1) % 1000 == 0){    
+        if((iter + 1) % 50000 == 0){    
 
             /* Esta sección fue copiada directamente de la parte inicial.
                Aquí se calcula la energía total electrostática y de núcleo
@@ -253,18 +246,20 @@ int main(){
                         //printf("e_rc %lf, e_el %lf\n",0.5 * (e_rc / num_particles), 0.5 * (e_el / num_particles));
                         
                     }
+                    
                 }
-
+                //printf("e_el temp %lf\n", 0.5 * (e_el / num_particles));
                 val_rc += e_rc * 0.5 / num_particles;
                 val_el += e_el * 0.5 / num_particles;
-
+               
                 //printf("e_rc %lf, e_el %lf\n",0.5 * (e_rc / num_particles), 0.5 * (e_el / num_particles));
 
                 e_rc = 0;
                 e_el = 0;
 
             }
-
+            
+            printf("#### Iteration %d ####\n", iter + 1);
             printf("val_rc %.6e\n", val_rc);
             printf("val_el %.6e\n", val_el);
 

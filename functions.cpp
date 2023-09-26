@@ -343,7 +343,7 @@ double new_pos_function(int indx, double dt, double * indx_positions, double new
     fy = fy_rc_KBT + fy_ew_KBT;
     fz = fz_rc_KBT + fz_ew_KBT;
 
-    //printf("fx %.6e fy %.6e fz %.6e\n", fx, fy, fz);
+    //printf("fx %lf fy %.6e fz %.6e\n", fx, fy, fz);
 
     gx = random_muller();
     gy = random_muller();
@@ -411,7 +411,7 @@ double few0(double rij, double vi, double vj){
     //printf("vi %lf vj %lf\n", vi, vj);
     //printf("rij %lf\n", rij);
     //printf("pow %lf\n", pow(rij, 2));
-    res = Bjerrum_len * (vi * vj) / pow(rij, 2);
+    res =  (Bjerrum_red / 1.e-10) * (vi * vj) / pow(rij, 2);
     //printf("res %.6e\n", res);
     return res;
 
