@@ -6,6 +6,8 @@ int main(){
 
     FILE* electric_energy;
     FILE* repulsive_energy;
+    FILE* mean_square_displacement;
+    FILE* electrolyte_movie;
 
     if(!read_parameters()){
         printf("No parameters file!\n");
@@ -17,8 +19,35 @@ int main(){
     diff_c_red = diff_c / 1.e-10;
     diff_c_red2 = diff_c_red / 1.e-10;
 
+    //calculating grid dimension. It starts from 0.
+    dim_gr = rint(.5 * box_len / delta_gr);
+
     printf("Bjerrum length is %.6e\n", Bjerrum_len);
     printf("Reduced Bjerrum length is %.6e\n", Bjerrum_red);
+    printf("Grid dimension %d\n", dim_gr);
+
+    double HR[species][species][dim_gr] = { 0. };
+    
+    double ***HR_temp = new double**[species];
+    for(int i = 0; i < species; i++){
+        HR_temp[i] = new double*[species];
+        for(int j = 0; j < species; j++){
+            HR_temp[i][j] = new double[dim_gr];
+            for(int k = 0; k < dim_gr; k++){
+                HR_temp[i][j][k] = 0.;
+            }
+
+        }
+    }
+
+    /*
+    printf("value for HR[1][0][50] %lf\n", HR[1][0][50]);
+    HR[1][0][50] = 3.56;
+    printf("value for HR[1][0][50] %lf\n", HR[1][0][50]);
+    */
+
+    //printf("rint(3.5) %lf, int(3.5) %d\n", rint(3.5), (int)3.5);
+
     //printf("K boltzman is %.1e\n", K_boltzmann);
     //printf("Pi is %lf\n\n", M_PI);
 
@@ -32,6 +61,7 @@ int main(){
     printf("%lf\t%lf\t%lf\n", positions[0 * 3 + 0], positions[0 * 3 + 1], positions[0 * 3 + 2]);
     printf("%lf\t%lf\t%lf\n", positions[99 * 3 + 0], positions[99 * 3 + 1], positions[99 * 3 + 2]);
 
+    very_initial_positions = (double*)malloc(num_particles * 3 * sizeof(double));
     /* Positions x, y, and z are stored in array named positions. 
         We are gonna multiply these positions by reduced length box at once. */
     for(int i = 0; i < num_particles; i++){
@@ -40,6 +70,10 @@ int main(){
         positions[i * 3 + 1] = (positions[i * 3 + 1] - 0.5) * box_len;
         positions[i * 3 + 2] = (positions[i * 3 + 2] - 0.5) * box_len;
 
+        very_initial_positions[i * 3 + 0] = positions[i * 3 + 0];
+        very_initial_positions[i * 3 + 1] = positions[i * 3 + 1];
+        very_initial_positions[i * 3 + 2] = positions[i * 3 + 2];
+    
         /*
         particles[i].pos_x = positions[i * 3 + 0];
         particles[i].pos_y = positions[i * 3 + 1];
@@ -62,6 +96,7 @@ int main(){
     char_array = (char*)malloc(num_particles * sizeof(char));
     radius_array = (double*)malloc(num_particles * sizeof(double));
     valence_array = (double*)malloc(num_particles * sizeof(double));
+    species_array = (short int*)malloc(num_particles * sizeof(short int));
 
     for(int i = 0; i < num_particles; i++){
         if(i < num_particles / species){
@@ -71,6 +106,7 @@ int main(){
             //particles[i].valence = val_1;
             valence_array[i] = val_1;
             char_array[i] = 'A';
+            species_array[i] = 0;
         }
         else{
             //particles[i].specie = 2;
@@ -79,6 +115,7 @@ int main(){
             //particles[i].valence = val_2;
             valence_array[i] = val_2;
             char_array[i] = 'B';
+            species_array[i] = 1;
         }
         //particles[i].infinite = 0;
     }
@@ -179,14 +216,35 @@ int main(){
     fclose(repulsive_energy);
     fclose(electric_energy);
 
+    /* Creating MSD file */
+    mean_square_displacement = fopen("mean_square_displacement.out", "w");
+    fclose(mean_square_displacement);
+
+    /* Electrolyte movie file */
+    electrolyte_movie = fopen("electrolyte_movie.xyz", "w");
+    fclose(electrolyte_movie);
+
     /* ##### This is the most important part #### */
 
     double * new_positions = (double*)malloc(num_particles * 3 * sizeof(double));
-    int * cells = (int*)malloc(num_particles * 3 * sizeof(int));
+    cells = (short int*)malloc(num_particles * 3 * sizeof(short int));
+    double msd_val = 0.;
+    double tau = 0.;
 
+    //Inicializando valores
+
+    for(int i = 0; i < num_particles; i++){
+        for(int j = 0; j < 3; j++){
+            cells[i * 3 + j] = 0;
+            new_positions[i * 3 + j] = 0.;
+        }
+    }
+
+    printf("%d, %d, %d\n", cells[0], cells[1], cells[2]);
+    printf("%d, %d, %d\n", cells[99 * 3], cells[99 * 3 + 1], cells[99 * 3 + 2]);
     //printf("dt is %.e\n", dt);
     //max_t_steps
-    for(int iter = 0; iter < 10000000; iter++){
+    for(int iter = 0; iter < max_time_steps; iter++){
         
         for(int indx = 0; indx < num_particles; indx++){
             
@@ -210,7 +268,24 @@ int main(){
         }
 
         //if((iter + 1) % (msd_steps) == 0 && iter != 0){
-        if((iter + 1) % 50000 == 0){    
+        if((iter + 1) % msd_steps == 0){    
+    
+            /* Mean Square Displacement implementation */
+            for(int i = 0; i < num_particles; i++){
+                msd_val += pow(positions[i * 3 + 0] + (double)cells[i * 3 + 0] * box_len - very_initial_positions[i * 3 + 0], 2)\
+                + pow(positions[i * 3 + 1] + (double)cells[i * 3 + 1] * box_len - very_initial_positions[i * 3 + 1], 2)\
+                + pow(positions[i * 3 + 2] + (double)cells[i * 3 + 2] * box_len - very_initial_positions[i * 3 + 2], 2);
+            }
+
+            msd_val /= num_particles;
+
+            mean_square_displacement = fopen("mean_square_displacement.out", "a");
+            
+            fprintf(mean_square_displacement, "%.6e\t\t%.6e\n", (iter + 1) * dt, msd_val);
+
+            fclose(mean_square_displacement);
+
+            msd_val = 0.;
 
             /* Esta sección fue copiada directamente de la parte inicial.
                Aquí se calcula la energía total electrostática y de núcleo
@@ -263,25 +338,76 @@ int main(){
             printf("val_rc %.6e\n", val_rc);
             printf("val_el %.6e\n", val_el);
 
+            //printf("%d, %d, %d\n", cells[0], cells[1], cells[2]);
+            //printf("%d, %d, %d\n", cells[99 * 3], cells[99 * 3 + 1], cells[99 * 3 + 2]);
+
             electric_energy = fopen("electric_energy.out", "a");
             repulsive_energy = fopen("repulsive_energy.out", "a");
 
-            fprintf(repulsive_energy, "%.d\t\t%.6e\n", iter + 1, val_rc);
-            fprintf(electric_energy, "%.d\t\t%.6e\n", iter + 1, val_el);
+            fprintf(repulsive_energy, "%.6e\t\t%.6e\n", (iter + 1) * dt, val_rc);
+            fprintf(electric_energy, "%.6e\t\t%.6e\n", (iter + 1) * dt, val_el);
 
             fclose(repulsive_energy);
             fclose(electric_energy);
 
         }
+
+        if((iter + 1) % gr_steps == 0 && (iter + 1) > min_eq_steps){
+
+            /* Movie */
+            /* electrolyte_movie = fopen("electrolyte_movie.xyz", "a");
+            fprintf(electrolyte_movie,"%d\n", num_particles);
+            fprintf(electrolyte_movie, "Electrolyte\n");
+            for(int i = 0; i < num_particles; i++){
+                fprintf(electrolyte_movie, "%c\t%.6e\t%.6e\t%.6e\n", char_array[i], positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);   
+            }
+            fclose(electrolyte_movie); */
+
+            /* Histograma */
+
+            histogram_hr_tau(num_particles, positions, species_array, HR_temp);
+            
+            for(int i = 0; i < species; i++){
+                for(int j = 0; j < species; j++){
+                    for(int k = 0; k < dim_gr; k++){
+                        HR[i][j][k] += HR_temp[i][j][k];
+                        HR_temp[i][j][k] = 0.;
+                    }
+                }
+            }
+
+            tau += 1.;
+        }
     }
 
-    /* #### End of simulation ####*/
+    /*for(int i = 0; i < species; i++){
+        for(int j = 0; j < species; j++){
+            for(int k = 0; k < dim_gr; k++){
+                printf("%lf ", HR[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }*/
 
     /* Free dynamic memory arrays */
     free(positions);
+    free(new_positions);
+    free(very_initial_positions);
+    free(species_array);
+    free(cells);
     free(char_array);
     free(radius_array);
     free(valence_array);
+
+    //free HR_temp triple-pointer
+    for(int i = 0; i < species; i++){
+        for(int j = 0; j < species; j++){
+            delete[] HR_temp[i][j];
+        }
+        delete[] HR_temp[i];
+    }
+    delete[] HR_temp;
 
     /* Destroy class dynamic memory array */
     //delete[] particles;

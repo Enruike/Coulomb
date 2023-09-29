@@ -19,10 +19,14 @@ class Particle
 };
 
 double vol_frac; //Volume fraction.
-double delta_gr; //                     !!!(Check if we can vary this delta through parameters file)!!!
+extern double delta_gr; //!!!(Check if we can vary this delta through parameters file)!!!
+int dim_gr; //Dimension of the grid should be start from 0.                 
 char *char_array;
 double *radius_array;
 double *valence_array;
+double * very_initial_positions;
+short int * cells;
+short int * species_array;
 
 extern double temp;
 extern double eps_r;
@@ -35,8 +39,10 @@ extern double val_2;
 extern double *positions;
 extern double box_len;
 extern double diameter;
-extern int max_t_steps;
+extern int max_time_steps;
+extern int min_eq_steps;
 extern int msd_steps;
+extern int gr_steps;
 extern double dt;
 extern double diff_c_red;
 extern double diff_c;
@@ -46,5 +52,6 @@ extern bool read_parameters();
 extern bool read_file_atom_pos();
 extern void periodic_distance(double xi, double yi, double zi,
     double& x_pos, double& y_pos, double& z_pos, double* positions);
-extern double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], int * cells);
-//extern void mi_after_move(int indx, double * positions, double * new_pos, int * cell);
+extern double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], short int cells[3]);
+extern void histogram_hr_tau(int num_particles, double * positions, short int * species_array,
+        double *** HR);

@@ -286,7 +286,7 @@ void periodic_distance(double xi, double yi, double zi,
 
     }
 
-double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], int * cells){
+double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], short int cells[3]){
 
     double xi, yi, zi;
     double fx, fy, fz;
@@ -362,7 +362,7 @@ double new_pos_function(int indx, double dt, double * indx_positions, double new
     //printf("pos inside function %lf\t%lf\t%lf\n", new_pos[0], new_pos[1], new_pos[2]);
     
 
-    if(std::isnan(mi_after_move(indx, new_pos[0], new_pos[1], new_pos[2], &cells[indx * 3]))){
+    if(std::isnan(mi_after_move(new_pos[0], new_pos[1], new_pos[2], cells[0], cells[1], cells[2]))){
         printf("\n!!!\n\tProblem after moving particles!\n");
         printf("\t\tdt is too large\n!!!\t\n\n");
         printf("original positions x:%lf y:%lf z:%lf\n", xi, yi, zi);
@@ -437,17 +437,17 @@ double random_muller(){
 
 }
 
-double mi_after_move(int indx, double& x, double& y, double& z, int * cell){
+double mi_after_move(double& x, double& y, double& z, short int& cell_x, short int& cell_y, short int& cell_z){
 
     //printf("indx %d begining mi_after_function x:%lf y:%lf z:%lf\n",indx, x, y, z);
 
     if(x > half_box && x <= 3. * half_box){
         x -= box_len;
-        cell[0] += 1;
+        cell_x += 1;
     }
     else if(x < - half_box && x >= -3. * half_box){
         x += box_len;
-        cell[0] -= 1;
+        cell_x -= 1;
     }
     else if(x > 3. * half_box || x < -3. * half_box){
         printf("\nx problem\n");
@@ -457,11 +457,11 @@ double mi_after_move(int indx, double& x, double& y, double& z, int * cell){
 
     if(y > half_box && y <= 3. * half_box){
         y -= box_len;
-        cell[1] += 1;
+        cell_y += 1;
     }
     else if(y < -half_box && y >= -3. * half_box){
         y += box_len;
-        cell[1] -= 1;
+        cell_y -= 1;
     }
     else if(y > 3. * half_box || y < -3. * half_box){
         printf("\ny problem\n");
@@ -471,11 +471,11 @@ double mi_after_move(int indx, double& x, double& y, double& z, int * cell){
 
     if(z > half_box && z <= 3. * half_box){
         z -= box_len;
-        cell[2] += 1;
+        cell_z += 1;
     }
     else if(z < -half_box && z >= -3. * half_box){
         z += box_len;
-        cell[2] -= 1;
+        cell_z -= 1;
     }
     else if(z > 3. * half_box || z < -3. * half_box){
         printf("z problem\n");
@@ -486,4 +486,44 @@ double mi_after_move(int indx, double& x, double& y, double& z, int * cell){
     //printf("indx %d end mi_after_function x:%lf y:%lf z:%lf\n", indx, x, y, z);
 
     return 0.;
+}
+
+void histogram_hr_tau(int num_particles, double * positions, short int * species_array,
+        double *** HR){
+    
+    double hr_local = 0.;
+    double dxij = 0., dyij = 0., dzij = 0.;
+    double dij = 0.;
+    bool flag = false;
+    int bin = 0;
+
+    for(int i = 0; i < num_particles; i++){
+        for(int j = 0; j < num_particles; j++){
+
+            dxij = positions[i * 3 + 0] - positions[j * 3 + 0];
+            dyij = positions[i * 3 + 1] - positions[j * 3 + 1];
+            dzij = positions[i * 3 + 2] - positions[j * 3 + 2];
+            dxij -= rint(dxij / box_len) * box_len;
+            dyij -= rint(dyij / box_len) * box_len;
+            dzij -= rint(dzij / box_len) * box_len;
+            dij = sqrt(pow(dxij, 2) + pow(dyij, 2) + pow(dzij, 2));
+
+            bin = (int)(dij / delta_gr);
+
+            if(i != j && bin <= (dim_gr - 1)){
+                for(int k = 0; k < species; k++){
+                    for(int m = k; m < species; m++){
+                        if(species_array[i] == k && species_array[j] == m){
+                            HR[k][m][bin] += 1.0;
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if(flag) break;
+                }
+            }
+
+            if(flag) flag = false;
+        }
+    }
 }

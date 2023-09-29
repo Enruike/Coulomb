@@ -21,6 +21,9 @@ extern double diff_c;
 extern double diff_c_red;
 extern double diff_c_red2;
 extern double d_rc; //Sigma for the rc potential.
+extern double delta_gr;
+extern int dim_gr;
+extern int species;
 
 //Repulsive Core
 double energy_rc_i_all(int indx, int np_total);
@@ -39,10 +42,13 @@ double box_muller(double num_1, double num_2);
 //Movie generator function
 void HOOMD_xml_generator();
 //New position function
-double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], int * cells);
+double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], short int cells[3]);
 double frc(double rij, double ri, double rj);
 double few0(double rij, double ri, double rj);
 // Random generator and Box-Muller function.
 double random_muller();
 //check movement
-double mi_after_move(int indx, double& x, double& y, double& z, int * cell);
+double mi_after_move(double& x, double& y, double& z, short int& cell_x, short int& cell_y, short int& cell_z);
+//Histogram Function
+void histogram_hr_tau(int num_particles, double * positions, short int * species_array,
+        double *** HR);

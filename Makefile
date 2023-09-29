@@ -16,7 +16,8 @@ pfm_coulomb.x: $(file_names)
 	$(CC) -gcc-name=$(GCC)-O2 $(file_names) -o pfm_coulomb.x $(ARGS)
 
 clean:
-	rm -f pfm_coulomb.x movie.xml electric_energy.out repulsive_energy.out
+	rm -f pfm_coulomb.x movie.xml electric_energy.out repulsive_energy.out\
+	electrolyte_movie.xyz mean_square_displacement.out
 
 ### Notes ###
 # For icpc use -gxx-name=g++-9 version flag

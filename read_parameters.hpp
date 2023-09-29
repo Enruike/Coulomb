@@ -18,16 +18,14 @@ bool disol; //Homogénea o inhomogénea (Disolución infinita).
 double box_len; //Box length.                              !!!(Check if it is in reduced units)!!!
 double half_box; //Half box length.
 double dt; //Delta time dt.
-int max_eq_time; //Max time for equilibration.
-int max_t_steps; //Max time steps.
+int min_eq_steps; //Minimum time steps for equilibration.
+int max_time_steps; //Max time steps.
 int msd_steps; //Saving steps for Mean Square Displacement.
 int gr_steps; //Saving steps for g(r).
 double eps_r; //Relative epsilon.
 double temp; //Temperature in Kelvin(K).
 double diameter; //                                             !!!(Check this diameter)!!!
-
-/*Parameters for position file*/
-int dim; //Dimensionality.
+double delta_gr;
 
 //Dynamic array memory
 double* positions;

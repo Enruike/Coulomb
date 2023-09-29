@@ -19,9 +19,10 @@ bool read_parameters(){
         fscanf(param, "Diffusion coefficient = %lf\n", &diff_c);
         fscanf(param, "Repulsive core sigma = %lf #Hardness\n", &d_rc);
         fscanf(param, "Length of the box = %lf #Length in Angstroms\n", &box_len);
+        fscanf(param, "Delta gr = %lf\n", &delta_gr);
         fscanf(param, "Delta t = %lf #Time step in seconds\n", &dt);
-        fscanf(param, "Max equilibration time = %d #Max time for equilibration\n", &max_eq_time);
-        fscanf(param, "Max time steps = %d #Max number of steps\n", &max_t_steps);
+        fscanf(param, "Min equilibration time steps = %d #Max time for equilibration\n", &min_eq_steps);
+        fscanf(param, "Max time steps = %d #Max number of steps\n", &max_time_steps);
         fscanf(param, "MSD steps = %d #Save MSD file at certain steps\n", &msd_steps);
         fscanf(param, "g(r) steps = %d #Saving steps for g(r)\n", &gr_steps);
         fscanf(param, "Infinite disolution = %d #0:Homogeneous or 1:Inhomogeneous\n", &disol);
@@ -50,16 +51,17 @@ bool read_parameters(){
     Diffusion coefficient = %.2e\n\
     Repulsive core sigma = %.2lf\n\
     Length of the box = %.2lf\u00c5\n\
+    Delta gr = %.2lf\n\
     Delta t = %.2e s\n\
-    Max equilibration time = %d\n\
+    Min equilibration time steps = %d\n\
     Max time steps = %d\n\
     MSD saving steps = %d\n\
     g(r) saving steps = %d\n\
     Infinite disolution = %s\n\
     Epsilon r = %.2lf\n\
     Temperature = %.2lfK\n\n",\
-    num_particles, species, r_1, r_2, val_1, val_2, rp_d, diff_c, d_rc,box_len, dt,\
-    max_eq_time, max_t_steps, msd_steps, gr_steps,flag, eps_r, temp);
+    num_particles, species, r_1, r_2, val_1, val_2, rp_d, diff_c, d_rc,box_len, delta_gr, dt,\
+    min_eq_steps, max_time_steps, msd_steps, gr_steps,flag, eps_r, temp);
 
     half_box = box_len / 2.;
 }
