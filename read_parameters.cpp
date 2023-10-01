@@ -19,12 +19,13 @@ bool read_parameters(){
         fscanf(param, "Diffusion coefficient = %lf\n", &diff_c);
         fscanf(param, "Repulsive core sigma = %lf #Hardness\n", &d_rc);
         fscanf(param, "Length of the box = %lf #Length in Angstroms\n", &box_len);
-        fscanf(param, "Delta gr = %lf\n", &delta_gr);
-        fscanf(param, "Delta t = %lf #Time step in seconds\n", &dt);
-        fscanf(param, "Min equilibration time steps = %d #Max time for equilibration\n", &min_eq_steps);
+        fscanf(param, "Delta grid = %lf #1 space over 5 splits = 0.2\n", &delta_gr);
+        fscanf(param, "Delta time = %lf #Time step in seconds\n", &dt);
+        fscanf(param, "Min equilibration time steps = %d #Min time for equilibration\n", &min_eq_steps);
         fscanf(param, "Max time steps = %d #Max number of steps\n", &max_time_steps);
-        fscanf(param, "MSD steps = %d #Save MSD file at certain steps\n", &msd_steps);
-        fscanf(param, "g(r) steps = %d #Saving steps for g(r)\n", &gr_steps);
+        fscanf(param, "Energy steps = %d #Saving steps for Energy and MSD file\n", &msd_steps);
+        fscanf(param, "Histogram steps = %d #Steps for calculating histogram\n", &histo_steps);
+        fscanf(param, "tau steps = %d #Steps for calculating g(r) and rho(r)\n0", &tau_steps);
         fscanf(param, "Infinite disolution = %d #0:Homogeneous or 1:Inhomogeneous\n", &disol);
         fscanf(param, "Epsilon r = %lf #Epsilon for electrolyte\n", &eps_r);
         fscanf(param, "Temperature = %lf #Temperature in Kelvin(K)\n", &temp);
@@ -51,17 +52,18 @@ bool read_parameters(){
     Diffusion coefficient = %.2e\n\
     Repulsive core sigma = %.2lf\n\
     Length of the box = %.2lf\u00c5\n\
-    Delta gr = %.2lf\n\
-    Delta t = %.2e s\n\
+    Delta grid = %.2lf\n\
+    Delta time = %.2e s\n\
     Min equilibration time steps = %d\n\
     Max time steps = %d\n\
-    MSD saving steps = %d\n\
-    g(r) saving steps = %d\n\
+    Energy & MSD saving steps = %d\n\
+    Histogram steps = %d\n\
+    \u03c4 steps = %d\n\
     Infinite disolution = %s\n\
     Epsilon r = %.2lf\n\
     Temperature = %.2lfK\n\n",\
     num_particles, species, r_1, r_2, val_1, val_2, rp_d, diff_c, d_rc,box_len, delta_gr, dt,\
-    min_eq_steps, max_time_steps, msd_steps, gr_steps,flag, eps_r, temp);
+    min_eq_steps, max_time_steps, msd_steps, histo_steps, tau_steps,flag, eps_r, temp);
 
     half_box = box_len / 2.;
 }

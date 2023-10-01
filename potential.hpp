@@ -42,11 +42,13 @@ extern double diameter;
 extern int max_time_steps;
 extern int min_eq_steps;
 extern int msd_steps;
-extern int gr_steps;
+extern int histo_steps;
+extern int tau_steps;
 extern double dt;
 extern double diff_c_red;
 extern double diff_c;
 extern double diff_c_red2;
+extern bool macro_flag;
 
 extern bool read_parameters();
 extern bool read_file_atom_pos();
@@ -55,3 +57,4 @@ extern void periodic_distance(double xi, double yi, double zi,
 extern double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], short int cells[3]);
 extern void histogram_hr_tau(int num_particles, double * positions, short int * species_array,
         double *** HR);
+extern void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, int * atoms_per_specie, double * bin_vol);

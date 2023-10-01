@@ -21,11 +21,14 @@ double dt; //Delta time dt.
 int min_eq_steps; //Minimum time steps for equilibration.
 int max_time_steps; //Max time steps.
 int msd_steps; //Saving steps for Mean Square Displacement.
-int gr_steps; //Saving steps for g(r).
+int histo_steps; //Steps for calculating histogram.
+int tau_steps; //Steps for calculating g(r) and rho(r).
 double eps_r; //Relative epsilon.
 double temp; //Temperature in Kelvin(K).
 double diameter; //                                             !!!(Check this diameter)!!!
-double delta_gr;
+double delta_gr; //Delta Grid.
+bool macro_flag;
+
 
 //Dynamic array memory
 double* positions;

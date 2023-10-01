@@ -26,15 +26,81 @@ int main(){
     printf("Reduced Bjerrum length is %.6e\n", Bjerrum_red);
     printf("Grid dimension %d\n", dim_gr);
 
-    double HR[species][species][dim_gr] = { 0. };
+    /* VERY IMPORTANT 
+        Macroflag will be set to false till macroion implementation
+        is ready. */
+    macro_flag = false;
+
+    //Number of atoms per specie
+    int * atoms_per_specie = (int*)malloc(species * sizeof(int));
     
-    double ***HR_temp = new double**[species];
+    if(macro_flag){
+        /* nothing till now */
+    }
+    else{
+        for(int i = 0; i < species; i++){
+            atoms_per_specie[i] = num_particles / species;
+        }
+    }
+
+    /* Condiciones de electroneutralidad */
+    double charge_val;
+    if(species == 2){
+
+        charge_val = val_1 * atoms_per_specie[0] + val_2 * atoms_per_specie[1];
+        
+        if(charge_val != 0.){
+            printf("Electronegativity condition is not met!\n");
+            exit(1);
+        }
+    }
+
+    double XR[dim_gr] = { 0. };
+    double XRP[dim_gr] = { 0. };
+    double bin_vol[dim_gr] = { 0. };
+
+    for(int i = 0; i < dim_gr; i++){
+        XR[i] = (i + 0.5) * delta_gr;
+        XRP[i] = XR[i] - XR[0];
+    }
+
+    for(int i = 0; i < dim_gr; i++){
+        if(i != dim_gr - 1){
+            bin_vol[i] = 4. / 3. * M_PI * (pow(XRP[i + 1], 3) - pow(XRP[i], 3));
+        }
+        else{
+            bin_vol[i] = 4. / 3. * M_PI * (pow((dim_gr + 0.5) * delta_gr - XR[0], 3));
+        }
+    }
+
+    //double HR[species][species][dim_gr] = { 0. };
+    //double GR[species][species][dim_gr] = { 0. };
+    //double RHOR[species][species][dim_gr] = { 0. };
+    
+    double ***HR = new double**[species];
+    double ***HR_temp = new double ** [species];
+    double ***RHOR = new double **[species];
+    double ***GR = new double **[species];
+
     for(int i = 0; i < species; i++){
-        HR_temp[i] = new double*[species];
+
+        HR[i] = new double * [species];
+        HR_temp[i] = new double * [species];
+        RHOR[i] = new double * [species];
+        GR[i] = new double *[species];
+
         for(int j = 0; j < species; j++){
+
+            HR[i][j] = new double[dim_gr];
             HR_temp[i][j] = new double[dim_gr];
+            RHOR[i][j] = new double[dim_gr];
+            GR[i][j] = new double[dim_gr];
+
             for(int k = 0; k < dim_gr; k++){
+                HR[i][j][k] = 0.;
                 HR_temp[i][j][k] = 0.;
+                RHOR[i][j][k] = 0.;
+                GR[i][j][k] = 0.;
             }
 
         }
@@ -352,7 +418,7 @@ int main(){
 
         }
 
-        if((iter + 1) % gr_steps == 0 && (iter + 1) > min_eq_steps){
+        if((iter + 1) % histo_steps == 0 && (iter + 1) > min_eq_steps){
 
             /* Movie */
             /* electrolyte_movie = fopen("electrolyte_movie.xyz", "a");
@@ -372,6 +438,21 @@ int main(){
                     for(int k = 0; k < dim_gr; k++){
                         HR[i][j][k] += HR_temp[i][j][k];
                         HR_temp[i][j][k] = 0.;
+                    }
+                }
+            }
+
+            if((int)tau > 0 && (int)tau % tau_steps == 0){
+                calculate_rhor_gr(RHOR, GR, HR, tau, atoms_per_specie, bin_vol);
+                
+                
+                /* Valores a 0 */
+                for(int i = 0; i < species; i++){
+                    for(int j = 0; j < species; j++){
+                        for(int k = 0; k < dim_gr; k++){
+                            RHOR[i][j][k] = 0.;
+                            GR[i][j][k] = 0.;
+                        }
                     }
                 }
             }
@@ -399,15 +480,25 @@ int main(){
     free(char_array);
     free(radius_array);
     free(valence_array);
+    free(atoms_per_specie);
 
     //free HR_temp triple-pointer
     for(int i = 0; i < species; i++){
         for(int j = 0; j < species; j++){
+            delete[] HR[i][j];
             delete[] HR_temp[i][j];
+            delete[] RHOR[i][j];
+            delete[] GR[i][j];
         }
         delete[] HR_temp[i];
+        delete[] HR[i];
+        delete[] RHOR[i];
+        delete[] GR[i];
     }
     delete[] HR_temp;
+    delete[] HR;
+    delete[] RHOR;
+    delete[] GR;
 
     /* Destroy class dynamic memory array */
     //delete[] particles;

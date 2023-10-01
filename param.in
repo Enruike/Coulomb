@@ -10,12 +10,16 @@ Repulsive core distance = 1.0
 Diffusion coefficient = 1.0e-9
 Repulsive core sigma = 1.0			    	#Hardness
 Length of the box = 30.0			    	#Length in Angstroms
-Delta gr = 0.20
-Delta t = 1.0e-15				        #Time step in seconds
-Min equilibration time steps = 40000			#Max time for equilibration
+Delta grid = 0.20					#1 space over 5 splits = 0.2
+Delta time = 1.0e-15				        #Time step in seconds
+Min equilibration time steps = 40000			#Min time for equilibration
 Max time steps = 280000				    	#Max number of steps
-MSD steps = 5000				        #Save MSD file at certain steps
-g(r) steps = 40					        #Saving steps for g(r)
+Energy steps = 5000				        #Saving steps for Energy and MSD file
+Histogram steps = 40				        #Steps for calculating histogram
+tau steps = 1000					#Steps for calculating g(r) and rho(r)
 Infinite disolution = 0				   	#0:Homogeneous or 1:Inhomogeneous
 Epsilon r = 80.0				        #Epsilon for electrolyte
 Temperature = 298.0				        #Temperature in Kelvin(K)
+
+NOTE: A tau step times histogram step and you will get the time step equivalent.
+	40 histogram steps * 1000 tau steps = 4000 time steps.

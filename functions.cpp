@@ -510,7 +510,9 @@ void histogram_hr_tau(int num_particles, double * positions, short int * species
 
             bin = (int)(dij / delta_gr);
 
-            if(i != j && bin <= (dim_gr - 1)){
+            //Aqui hice una modificación en las condiciones del dim_gr
+            //antes era dim_gr - 1, y era <= también.
+            if(i != j && bin < (dim_gr)){
                 for(int k = 0; k < species; k++){
                     for(int m = k; m < species; m++){
                         if(species_array[i] == k && species_array[j] == m){
@@ -526,4 +528,29 @@ void histogram_hr_tau(int num_particles, double * positions, short int * species
             if(flag) flag = false;
         }
     }
+}
+
+void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, int * atoms_per_specie, double * bin_vol){
+
+    for(int i = 0; i < dim_gr; i++){
+        for(int k = 0; k < species; k++){
+            for(int m = 0; m < species; m++){
+
+                if(tau * (double)atoms_per_specie[k] * bin_vol[i] > 0.){
+                    RHOR[k][m][i] = HR[k][m][i] / (tau * (double)atoms_per_specie[k] * bin_vol[i]);
+                }
+                else{
+                    RHOR[k][m][i] = 0.;
+                }
+                if(tau * (double)atoms_per_specie[m] * bin_vol[i] > 0.){
+                    GR[k][m][i] = RHOR[k][m][i] / ((double)atoms_per_specie[m] / pow(box_len, 3));
+                }
+                else{
+                    GR[k][m][i] = 0.;
+                }
+
+            }
+        }
+    }
+
 }
