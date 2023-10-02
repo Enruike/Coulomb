@@ -8,6 +8,8 @@ int main(){
     FILE* repulsive_energy;
     FILE* mean_square_displacement;
     FILE* electrolyte_movie;
+    FILE * rhor_file;
+    FILE * gr_file;
 
     if(!read_parameters()){
         printf("No parameters file!\n");
@@ -55,6 +57,8 @@ int main(){
         }
     }
 
+    char rhor_file_name[100];
+    char gr_file_name[100];
     double XR[dim_gr] = { 0. };
     double XRP[dim_gr] = { 0. };
     double bin_vol[dim_gr] = { 0. };
@@ -198,7 +202,7 @@ int main(){
     //Create a uniform real distribution
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
-    printf("\t##### random number generator #####\n");
+    printf("\n\t##### random number generator #####\n");
     for(int i = 0; i < 3; i++){
         random_number = distribution(generator);
         printf("%lf\n", random_number);
@@ -212,7 +216,7 @@ int main(){
         printf("%lf\n", box_muller(ran_num1, ran_num2));
     }
 
-    printf("\t\t#####\n");
+    printf("\n\t\t#####\n");
 
 
     /* Generador de archivo movie.xml */
@@ -267,8 +271,8 @@ int main(){
     }
     
 
-    printf("val_rc %.6e\n", val_rc);
-    printf("val_el %.6e\n", val_el);
+    printf("Repulsive Core Energy %.6e\n", val_rc);
+    printf("Electrostatic Energy %.6e\n\t\t#####\n\n", val_el);
 
     /* Creando archivos de energía eléctrica y repulsiva */
     electric_energy = fopen("electric_energy.out", "w");
@@ -295,7 +299,7 @@ int main(){
     double * new_positions = (double*)malloc(num_particles * 3 * sizeof(double));
     cells = (short int*)malloc(num_particles * 3 * sizeof(short int));
     double msd_val = 0.;
-    double tau = 0.;
+    double tau = 1.;
 
     //Inicializando valores
 
@@ -306,10 +310,13 @@ int main(){
         }
     }
 
-    printf("%d, %d, %d\n", cells[0], cells[1], cells[2]);
-    printf("%d, %d, %d\n", cells[99 * 3], cells[99 * 3 + 1], cells[99 * 3 + 2]);
+    //printf("%d, %d, %d\n", cells[0], cells[1], cells[2]);
+    //printf("%d, %d, %d\n", cells[99 * 3], cells[99 * 3 + 1], cells[99 * 3 + 2]);
     //printf("dt is %.e\n", dt);
     //max_t_steps
+
+    printf("##### Equilibration initialized #####\n");
+    printf("\t# Set to %d steps #\n", min_eq_steps);
     for(int iter = 0; iter < max_time_steps; iter++){
         
         for(int indx = 0; indx < num_particles; indx++){
@@ -400,9 +407,9 @@ int main(){
 
             }
             
-            printf("#### Iteration %d ####\n", iter + 1);
-            printf("val_rc %.6e\n", val_rc);
-            printf("val_el %.6e\n", val_el);
+            //printf("#### Iteration %d ####\n", iter + 1);
+            //printf("val_rc %.6e\n", val_rc);
+            //printf("val_el %.6e\n", val_el);
 
             //printf("%d, %d, %d\n", cells[0], cells[1], cells[2]);
             //printf("%d, %d, %d\n", cells[99 * 3], cells[99 * 3 + 1], cells[99 * 3 + 2]);
@@ -419,15 +426,20 @@ int main(){
         }
 
         if((iter + 1) % histo_steps == 0 && (iter + 1) > min_eq_steps){
+            
+            if(tau == 1){
+                printf("... Equilibration is done!\n\n");
+            }
 
             /* Movie */
-            /* electrolyte_movie = fopen("electrolyte_movie.xyz", "a");
+            
+            electrolyte_movie = fopen("electrolyte_movie.xyz", "a");
             fprintf(electrolyte_movie,"%d\n", num_particles);
             fprintf(electrolyte_movie, "Electrolyte\n");
             for(int i = 0; i < num_particles; i++){
                 fprintf(electrolyte_movie, "%c\t%.6e\t%.6e\t%.6e\n", char_array[i], positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);   
             }
-            fclose(electrolyte_movie); */
+            fclose(electrolyte_movie);
 
             /* Histograma */
 
@@ -443,9 +455,23 @@ int main(){
             }
 
             if((int)tau > 0 && (int)tau % tau_steps == 0){
+
+                printf("##### %d\u03c4 iteration #####\n", (int)tau);
+
                 calculate_rhor_gr(RHOR, GR, HR, tau, atoms_per_specie, bin_vol);
+
+                snprintf(rhor_file_name, sizeof(rhor_file_name), "%d_rhor.out", (int)tau);
+                snprintf(gr_file_name, sizeof(gr_file_name), "%d_gr.out", (int)tau);
                 
-                
+                rhor_file = fopen(rhor_file_name, "w");
+                gr_file = fopen(gr_file_name, "w");
+
+                fclose(rhor_file);
+                fclose(gr_file);
+
+                write_gr_rhor(gr_file, gr_file_name, (int)tau, species, XR, GR);
+                write_gr_rhor(rhor_file, rhor_file_name, (int)tau, species, XR, RHOR);
+
                 /* Valores a 0 */
                 for(int i = 0; i < species; i++){
                     for(int j = 0; j < species; j++){

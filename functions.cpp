@@ -554,3 +554,48 @@ void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau
     }
 
 }
+
+void write_gr_rhor(FILE * file, char * file_name, int tau, int species, double * XR, double *** gr_rhor){
+
+    file = fopen(file_name, "a");
+    int column = 1;
+
+    fprintf(file, "# %d\u03c4\n", tau);
+    fprintf(file, "# %d species\n", species);
+    fprintf(file, "# %d", column);
+
+    for(int i = 0; i < species; i++){
+        for(int j = 0; j < species; j++){
+            column++;
+            fprintf(file, "\t\t%d", column);
+        }
+    }
+    
+    column++;
+    fprintf(file, "\n");
+
+    fprintf(file, "# x");
+
+    for(int i = 0; i < species; i++){
+        for(int j = i; j < species; j++){
+            fprintf(file, "\t\tg%d%d", i + 1, j + 1);
+        }
+    }
+    fprintf(file, "\t\tbin\n");
+
+    for(int k = 0; k < dim_gr; k++){
+
+        fprintf(file, "%lf", XR[k]);
+
+        for(int i = 0; i < species; i++){
+            for(int j = i; j < species; j++){
+                fprintf(file, "\t%lf", gr_rhor[i][j][k]);
+            }
+        }
+
+        fprintf(file, "\t%d\n", k);
+    }
+
+    fclose(file);
+
+}
