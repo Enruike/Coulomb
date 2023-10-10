@@ -48,14 +48,17 @@ extern double dt;
 extern double diff_c_red;
 extern double diff_c;
 extern double diff_c_red2;
-extern bool macro_flag;
+extern double macro_valence;
+extern int macro_num;
+extern bool file_pos_gen;
 
 extern bool read_parameters();
 extern bool read_file_atom_pos();
+extern bool pos_macro_gen();
 extern void periodic_distance(double xi, double yi, double zi,
     double& x_pos, double& y_pos, double& z_pos, double* positions);
 extern double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], short int cells[3]);
 extern void histogram_hr_tau(int num_particles, double * positions, short int * species_array,
         double *** HR);
-extern void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, int * atoms_per_specie, double * bin_vol);
+extern void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, unsigned int * atoms_per_specie, double * bin_vol);
 extern void write_gr_rhor(FILE * file, char * file_name, int tau, int species, double * XR, double *** gr_rhor);

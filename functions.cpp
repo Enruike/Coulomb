@@ -437,6 +437,16 @@ double random_muller(){
 
 }
 
+void pos_gen(double pos[3]){
+
+    pos[0] = distribution(generator);
+    pos[1] = distribution(generator);
+    pos[2] = distribution(generator);
+
+    //printf("num1 %lf num2 %lf\n", num1, num2);
+
+}
+
 double mi_after_move(double& x, double& y, double& z, short int& cell_x, short int& cell_y, short int& cell_z){
 
     //printf("indx %d begining mi_after_function x:%lf y:%lf z:%lf\n",indx, x, y, z);
@@ -530,7 +540,7 @@ void histogram_hr_tau(int num_particles, double * positions, short int * species
     }
 }
 
-void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, int * atoms_per_specie, double * bin_vol){
+void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, unsigned int * atoms_per_specie, double * bin_vol){
 
     for(int i = 0; i < dim_gr; i++){
         for(int k = 0; k < species; k++){

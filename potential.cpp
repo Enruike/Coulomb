@@ -31,31 +31,86 @@ int main(){
     /* VERY IMPORTANT 
         Macroflag will be set to false till macroion implementation
         is ready. */
-    macro_flag = false;
-
-    //Number of atoms per specie
-    int * atoms_per_specie = (int*)malloc(species * sizeof(int));
     
-    if(macro_flag){
-        /* nothing till now */
+    unsigned int * atoms_per_specie;
+    double charge_val;
+
+    //Number of atoms per specie    
+    if(macro_num != 0){
+        
+        double val_diff = 0.;
+        int more_particles = 0;
+        double val_add = 0.;
+        atoms_per_specie = (unsigned int*)malloc((species + 1) * sizeof(unsigned int));
+        
+        atoms_per_specie[0] = num_particles / species;
+        atoms_per_specie[1] = num_particles / species;
+        atoms_per_specie[2] = macro_num;
+
+        charge_val = val_1 * double(num_particles / species) + val_2 * double(num_particles / species) + macro_valence * (double)macro_num;
+        val_diff = charge_val - (val_1 * double(num_particles / species) + val_2 * double(num_particles / species));
+        num_particles += macro_num;
+        if(charge_val != 0.){
+
+            printf("\n *** Electronegativity condition is not met! ***\n");
+            if (val_1 < 0.)
+            {
+                if(val_diff > 0){
+                    printf("Valence difference = +%.2lf\n", val_diff);
+                    more_particles = (int)abs(val_diff / val_1);
+                    printf("Adding %d particles with %.2lf valence (val 1)\n", more_particles, val_1);
+                    atoms_per_specie[0] += more_particles;
+                }
+                else{
+                    printf("Valence difference = %.2lf\n", val_diff);
+                    more_particles = (int)abs(val_diff / val_2);
+                    printf("Adding %d particles with +%.2lf valence (val 2)\n", more_particles, val_2);
+                    atoms_per_specie[1] += more_particles;
+                }
+            }
+            else{
+                if(val_diff > 0){
+                    printf("Valence difference = +%.2lf\n", val_diff);
+                    more_particles = (int)abs(val_diff / val_2);
+                    printf("Adding %d particles with %.2lf valence (val 2)\n", more_particles, val_2);
+                    atoms_per_specie[1] += more_particles;
+                }
+                else{
+                    printf("Valence difference = %.2lf\n", val_diff);
+                    more_particles = (int)abs(val_diff / val_1);
+                    printf("Adding %d particles with +%.2lf valence (val 1)\n", more_particles, val_1);
+                    atoms_per_specie[0] += more_particles;
+                }
+
+            }           
+
+        }
+        num_particles += more_particles;
+        printf("Total number of particles will be now %d\n", num_particles);
+        for(int i = 0; i < species + 1; i++){
+            printf("sp%d: %d ", i + 1, atoms_per_specie[i]);
+        }
+        printf("\n\n");
+
     }
     else{
+
+        /* Condiciones de electroneutralidad */
+        charge_val = val_1 * (double)(num_particles / species) + val_2 * (double)(num_particles / species);
+        
+        if(charge_val != 0.){
+            printf("Electronegativity condition is not met!\n");
+            printf("Total charge is %lf\n", charge_val);
+            exit(1);
+        }
+
+        atoms_per_specie = (unsigned int*)malloc(species * sizeof(unsigned int));
+
         for(int i = 0; i < species; i++){
             atoms_per_specie[i] = num_particles / species;
         }
     }
 
-    /* Condiciones de electroneutralidad */
-    double charge_val;
-    if(species == 2){
-
-        charge_val = val_1 * atoms_per_specie[0] + val_2 * atoms_per_specie[1];
-        
-        if(charge_val != 0.){
-            printf("Electronegativity condition is not met!\n");
-            exit(1);
-        }
-    }
 
     char rhor_file_name[100];
     char gr_file_name[100];
@@ -122,14 +177,33 @@ int main(){
     //printf("Pi is %lf\n\n", M_PI);
 
     //Particle *particles = new Particle[num_particles];
-    
-    if(!read_file_atom_pos()){
-        printf("No positions file found!\n");
-        exit(1);
-    }
 
-    printf("%lf\t%lf\t%lf\n", positions[0 * 3 + 0], positions[0 * 3 + 1], positions[0 * 3 + 2]);
-    printf("%lf\t%lf\t%lf\n", positions[99 * 3 + 0], positions[99 * 3 + 1], positions[99 * 3 + 2]);
+    /* Adding function for reading or generating positions file */
+
+    
+    if(macro_num != 0){
+
+        if(file_pos_gen){
+             pos_macro_gen();
+        }
+        else{
+
+
+
+        }
+
+    }
+    else{
+
+        if(!read_file_atom_pos()){
+            printf("No positions file found!\n");
+            exit(1);
+        }
+    }
+    //exit(1);
+
+    //printf("%lf\t%lf\t%lf\n", positions[0 * 3 + 0], positions[0 * 3 + 1], positions[0 * 3 + 2]);
+    //printf("%lf\t%lf\t%lf\n", positions[99 * 3 + 0], positions[99 * 3 + 1], positions[99 * 3 + 2]);
 
     very_initial_positions = (double*)malloc(num_particles * 3 * sizeof(double));
     /* Positions x, y, and z are stored in array named positions. 

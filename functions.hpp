@@ -52,5 +52,7 @@ double mi_after_move(double& x, double& y, double& z, short int& cell_x, short i
 //Histogram Function
 void histogram_hr_tau(int num_particles, double * positions, short int * species_array,
         double *** HR);
-void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, double * atoms_per_specie, double * bin_vol);
+void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, unsigned int * atoms_per_specie, double * bin_vol);
 void write_gr_rhor(FILE * file, char * file_name, int tau, int species, double * XR, double *** gr_rhor);
+
+void pos_gen(double pos[3]);

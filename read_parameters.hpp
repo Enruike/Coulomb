@@ -1,6 +1,8 @@
 #pragma once
 #include<stdio.h>
 #include<iostream>
+#include<random>
+#include<ctime>
 
 /*Parameters*/
 int num_particles; //número de partículas.
@@ -28,6 +30,11 @@ double temp; //Temperature in Kelvin(K).
 double diameter; //                                             !!!(Check this diameter)!!!
 double delta_gr; //Delta Grid.
 bool macro_flag;
+int macro_num;
+double macro_valence;
+double macro_radius;
+double macro_rc;
+bool file_pos_gen;
 
 
 //Dynamic array memory
@@ -36,3 +43,5 @@ double* positions;
 /*Functions*/
 bool read_parameters(); //Reading parameters function;
 bool read_file_atom_pos(); //Reading the position file.
+bool pos_macro_gen();
+extern void pos_gen(double [3]);
