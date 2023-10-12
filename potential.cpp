@@ -8,8 +8,10 @@ int main(){
     FILE* repulsive_energy;
     FILE* mean_square_displacement;
     FILE* electrolyte_movie;
-    FILE * rhor_file;
-    FILE * gr_file;
+    FILE* rhor_file;
+    FILE* gr_file;
+    FILE* pos_file;
+
 
     if(!read_parameters()){
         printf("No parameters file!\n");
@@ -111,6 +113,62 @@ int main(){
         }
     }
 
+    char_array = (char*)malloc(num_particles * sizeof(char));
+    radius_array = (double*)malloc(num_particles * sizeof(double));
+    valence_array = (double*)malloc(num_particles * sizeof(double));
+    species_array = (short int*)malloc(num_particles * sizeof(short int));
+
+    if(macro_num != 0){
+
+        for(int i = 0; i < atoms_per_specie[0]; i++){
+            char_array[i] = 'A';
+            radius_array[i] = r_1;
+            valence_array[i] = val_1;
+            species_array[i] = 0;
+        }
+        for(int i = atoms_per_specie[0]; i < (atoms_per_specie[0] + atoms_per_specie[1]); i++){
+            char_array[i] = 'B';
+            radius_array[i] = r_2;
+            valence_array[i] = val_2;
+            species_array[i] = 1;
+        }
+        for(int i = (atoms_per_specie[0] + atoms_per_specie[1]); i < (atoms_per_specie[0] + atoms_per_specie[1] + atoms_per_specie[2]); i++){
+            char_array[i] = 'C';
+            radius_array[i] = macro_radius;
+            valence_array[i] = macro_valence;
+            species_array[i] = 2;
+        }
+
+    }
+    else{
+        
+        for(int i = 0; i < num_particles; i++){
+            if(i < num_particles / species){
+                //particles[i].specie = 1;
+                //particles[i].radius = r_1;
+                radius_array[i] = r_1;
+                //particles[i].valence = val_1;
+                valence_array[i] = val_1;
+                char_array[i] = 'A';
+                species_array[i] = 0;
+            }
+            else{
+                //particles[i].specie = 2;
+                //particles[i].radius = r_2;
+                radius_array[i] = r_2;
+                //particles[i].valence = val_2;
+                valence_array[i] = val_2;
+                char_array[i] = 'B';
+                species_array[i] = 1;
+            }
+            //particles[i].infinite = 0;
+        }
+
+    }
+
+    if(macro_num != 0){
+        species += 1;
+    }
 
     char rhor_file_name[100];
     char gr_file_name[100];
@@ -178,17 +236,47 @@ int main(){
 
     //Particle *particles = new Particle[num_particles];
 
-    /* Adding function for reading or generating positions file */
 
+
+    /* Adding function for reading or generating positions file */
     
     if(macro_num != 0){
 
         if(file_pos_gen){
-             pos_macro_gen();
+            pos_macro_gen();
+            
+            pos_file = fopen("positions.xyz", "w");
+            fclose(pos_file);
+
+            pos_file = fopen("positions.xyz", "a");
+
+            fprintf(pos_file,"%d\n", num_particles);
+            fprintf(pos_file, "Positions\n");
+
+            for(int i = 0; i < num_particles; i++){
+                fprintf(pos_file, "%c\t%.12lf\t%.12lf\t%.12lf\n", char_array[i], positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);   
+            }
+            fclose(pos_file);
+
+            /* for(int i = 0; i < num_particles; i++){
+                printf("%c\t%lf\t%lf\t%lf\n", char_array[i], positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);   
+            } */
+
         }
         else{
 
+            if(!pos_macro_read()){
+                printf("No positions file found!\n");
+                printf("Program ended\n");
+                exit(1);
+            }
+            else{
+                printf("Position file read successfully!\n");
 
+                /* for(int i = 0; i < num_particles; i++){
+                     printf("%c\t%lf\t%lf\t%lf\n", char_array[i], positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);   
+                } */
+            }
 
         }
 
@@ -200,7 +288,6 @@ int main(){
             exit(1);
         }
     }
-    //exit(1);
 
     //printf("%lf\t%lf\t%lf\n", positions[0 * 3 + 0], positions[0 * 3 + 1], positions[0 * 3 + 2]);
     //printf("%lf\t%lf\t%lf\n", positions[99 * 3 + 0], positions[99 * 3 + 1], positions[99 * 3 + 2]);
@@ -226,43 +313,25 @@ int main(){
 
     }
 
-    printf("Diameter %lf\n", diameter);
-    printf("Max diameter %lf\n", diameter * box_len);
+    //printf("Diameter %lf\n", diameter);
+    //printf("Max diameter %lf\n", diameter * box_len);
 
-    printf("%lf\t%lf\t%lf\n", positions[0 * 3 + 0], positions[0 * 3 + 1], positions[0 * 3 + 2]);
-    printf("%lf\t%lf\t%lf\n", positions[(num_particles - 1) * 3 + 0], positions[99 * 3 + 1], positions[99 * 3 + 2]);
+    if(macro_num == 0){
+        printf("%lf\t%lf\t%lf\n", positions[0 * 3 + 0], positions[0 * 3 + 1], positions[0 * 3 + 2]);
+        printf("%lf\t%lf\t%lf\n", positions[(num_particles - 1) * 3 + 0], positions[(num_particles - 1) * 3 + 1], positions[(num_particles - 1) * 3 + 2]);
+    }
+    else{
+        printf("%lf\t%lf\t%lf\n", positions[0 * 3 + 0], positions[0 * 3 + 1], positions[0 * 3 + 2]);
+        printf("%lf\t%lf\t%lf\n", positions[(num_particles - macro_num - 1) * 3 + 0], positions[(num_particles - macro_num - 1) * 3 + 1], positions[(num_particles - macro_num - 1) * 3 + 2]);
+
+        printf("%lf\t%lf\t%lf\n", positions[(num_particles - 2) * 3 + 0], positions[(num_particles - 2) * 3 + 1], positions[(num_particles - 2) * 3 + 2]);
+        printf("%lf\t%lf\t%lf\n", positions[(num_particles - 1) * 3 + 0], positions[(num_particles - 1) * 3 + 1], positions[(num_particles - 1) * 3 + 2]);
+    }
     
 
-    vol_frac = num_particles * (M_PI / 6.) * pow(diameter, 3); //      !!! Check the use of volume fraction
+    //vol_frac = num_particles * (M_PI / 6.) * pow(diameter, 3); //      !!! Check the use of volume fraction
 
-    printf("Volume fraction: %lf\n", vol_frac);
-
-    char_array = (char*)malloc(num_particles * sizeof(char));
-    radius_array = (double*)malloc(num_particles * sizeof(double));
-    valence_array = (double*)malloc(num_particles * sizeof(double));
-    species_array = (short int*)malloc(num_particles * sizeof(short int));
-
-    for(int i = 0; i < num_particles; i++){
-        if(i < num_particles / species){
-            //particles[i].specie = 1;
-            //particles[i].radius = r_1;
-            radius_array[i] = r_1;
-            //particles[i].valence = val_1;
-            valence_array[i] = val_1;
-            char_array[i] = 'A';
-            species_array[i] = 0;
-        }
-        else{
-            //particles[i].specie = 2;
-            //particles[i].radius = r_2;
-            radius_array[i] = r_2;
-            //particles[i].valence = val_2;
-            valence_array[i] = val_2;
-            char_array[i] = 'B';
-            species_array[i] = 1;
-        }
-        //particles[i].infinite = 0;
-    }
+    //printf("Volume fraction: %lf\n", vol_frac);
 
     /* Random variables */
 
@@ -322,7 +391,13 @@ int main(){
                 dyij = yi - y_pos;
                 dzij = zi - z_pos;
                 rij = sqrt(pow(dxij, 2) + pow(dyij, 2) + pow(dzij, 2));
-                e_rc += erc(rij, radius_array[indx], radius_array[i]);
+                if(std::isnan(e_rc += erc(rij, radius_array[indx], radius_array[i]))){
+                            printf("An error has ocurred!\n");
+                            printf("indx %d xi: %lf, yi: %lf, zi: %lf\n", indx, xi, yi, zi);
+                            printf("i: %d xpos: %lf, yzpos: %lf, zpos: %lf\n", i, x_pos, y_pos, z_pos);
+                            printf("dxij %lf dyij %lf dzij %lf\n", dxij, dyij, dzij);
+                            exit(1);
+                        }
                 e_el += eew(rij, valence_array[indx], valence_array[i]);
                 //printf("i : %d\n", i);
                 //printf("e_el %.6e\n", 0.5 * e_el / num_particles);
@@ -389,11 +464,22 @@ int main(){
     //printf("dt is %.e\n", dt);
     //max_t_steps
 
+    //Particle number
+    int np = 0;
+    if(macro_num != 0){
+        np = num_particles - 1;
+    }
+    else{
+        np = num_particles;
+    }
+
     printf("##### Equilibration initialized #####\n");
     printf("\t# Set to %d steps #\n", min_eq_steps);
     for(int iter = 0; iter < max_time_steps; iter++){
         
-        for(int indx = 0; indx < num_particles; indx++){
+        /* When macroions exist, np would not iterate over the last particle. 
+        *  This is due to the last position corresponds to the fixed macroion. */
+        for(int indx = 0; indx < np; indx++){
             
             if(std::isnan(new_pos_function(indx, dt, &positions[indx * 3], &new_positions[indx * 3], &cells[indx * 3]))){
                 printf("Moving particles function error!\n");

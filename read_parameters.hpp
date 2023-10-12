@@ -44,4 +44,5 @@ double* positions;
 bool read_parameters(); //Reading parameters function;
 bool read_file_atom_pos(); //Reading the position file.
 bool pos_macro_gen();
+bool pos_macro_read();
 extern void pos_gen(double [3]);

@@ -50,11 +50,13 @@ extern double diff_c;
 extern double diff_c_red2;
 extern double macro_valence;
 extern int macro_num;
+extern double macro_radius;
 extern bool file_pos_gen;
 
 extern bool read_parameters();
 extern bool read_file_atom_pos();
 extern bool pos_macro_gen();
+extern bool pos_macro_read();
 extern void periodic_distance(double xi, double yi, double zi,
     double& x_pos, double& y_pos, double& z_pos, double* positions);
 extern double new_pos_function(int indx, double dt, double * indx_positions, double new_pos[3], short int cells[3]);

@@ -160,50 +160,85 @@ bool pos_macro_gen(){
 
     positions = (double*)malloc(num_particles * 3 * sizeof(double));
     
-    positions[(num_particles - 2) * 3 + 0] = macro_1[0] = .5;
-    positions[(num_particles - 2) * 3 + 1] = macro_1[1] = 0.5;
-    positions[(num_particles - 2) * 3 + 2] = macro_1[2] = 0.5;
-    positions[(num_particles - 1) * 3 + 0] = macro_2[0] = 0.75;
-    positions[(num_particles - 1) * 3 + 1] = macro_2[1] = 0.75;
-    positions[(num_particles - 1) * 3 + 2] = macro_2[2] = 0.75;
-
-    /* for(int i = 0; i < 3; i++){
-        macro_1[i] = (macro_1[i] - 0.5) * box_len;
-        macro_2[i] = (macro_2[i] - 0.5) * box_len;
-    } */
-
-    for(int i = (num_particles - macro_num); i < num_particles; i++){
-        printf("x: %.10lf y:%.10lf z:%.10lf\n", positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
-    }
-    printf("m1x: %lf m1y:%lf m1z:%lf\n", macro_1[0], macro_1[1], macro_1[2]);
-    printf("m2x: %lf m2y:%lf m2z:%lf\n", macro_2[0], macro_2[1], macro_2[2]);
-
-    printf("num particles is %d\n", num_particles);
-    //printf("macro num %d\n", macro_num);
+    macro_1[0] = positions[(num_particles - 2) * 3 + 0] = 0.75;
+    macro_1[1] = positions[(num_particles - 2) * 3 + 1] = 0.75;
+    macro_1[2] = positions[(num_particles - 2) * 3 + 2] = 0.75;
+    macro_2[0] = positions[(num_particles - 1) * 3 + 0] = 0.5;
+    macro_2[1] = positions[(num_particles - 1) * 3 + 1] = 0.5;
+    macro_2[2] = positions[(num_particles - 1) * 3 + 2] = 0.5;
 
     for(int i = 0; i < (num_particles - macro_num); i++){
         
-        printf("iter i:%d\n", i);
+        //printf("iter i:%d\n", i);
         pos_gen(pos);
+
+        //checking first random position 
+        if(i == 0){
+
+            while (overlap)
+            {
+                m1xij = (macro_1[0] - pos[0]) * box_len;
+                m1yij = (macro_1[1] - pos[1]) * box_len;
+                m1zij = (macro_1[2] - pos[2]) * box_len;
+
+                m1xij -= rint(m1xij / box_len) * box_len;
+                m1yij -= rint(m1yij / box_len) * box_len;
+                m1zij -= rint(m1zij / box_len) * box_len; 
+            
+                m2xij = (macro_2[0] - pos[0]) * box_len;
+                m2yij = (macro_2[1] - pos[1]) * box_len;
+                m2zij = (macro_2[2] - pos[2]) * box_len;
+
+                m2xij -= rint(m2xij / box_len) * box_len;
+                m2yij -= rint(m2yij / box_len) * box_len;
+                m2zij -= rint(m2zij / box_len) * box_len; 
+
+                dis_m1 = sqrt(pow(m1xij, 2) +pow(m1yij, 2) + pow(m1zij, 2));
+                dis_m2 = sqrt(pow(m2xij, 2) +pow(m2yij, 2) + pow(m2zij, 2));
+
+                if(dis_m1 <= (macro_radius + radius) && dis_m2 <= (macro_radius + radius)){
+                    //printf("First position overlaps\n");
+                    pos_gen(pos);
+                }
+                else{
+                    overlap = false;
+                }
+            
+            }
+
+        }
+
         //printf("x: %.10lf y:%.10lf z:%.10lf\n", pos[0], pos[1], pos[2]);
         while (overlap){
             for(int j = 0; j <= i; j++){     
             
                 if(j != i){
-                    printf("i:%d j:%d ", i, j);
+                    //printf("i:%d j:%d ", i, j);
                     
                         
                     xij = (positions[j * 3 + 0] - pos[0]) * box_len;
                     yij = (positions[j * 3 + 1] - pos[1]) * box_len;
                     zij = (positions[j * 3 + 2] - pos[2]) * box_len;
 
+                    xij -= rint(xij / box_len) * box_len;
+                    yij -= rint(yij / box_len) * box_len;
+                    zij -= rint(zij / box_len) * box_len; 
+
                     m1xij = (macro_1[0] - pos[0]) * box_len;
                     m1yij = (macro_1[1] - pos[1]) * box_len;
                     m1zij = (macro_1[2] - pos[2]) * box_len;
+
+                    m1xij -= rint(m1xij / box_len) * box_len;
+                    m1yij -= rint(m1yij / box_len) * box_len;
+                    m1zij -= rint(m1zij / box_len) * box_len; 
                     
                     m2xij = (macro_2[0] - pos[0]) * box_len;
                     m2yij = (macro_2[1] - pos[1]) * box_len;
                     m2zij = (macro_2[2] - pos[2]) * box_len;
+
+                    m2xij -= rint(m2xij / box_len) * box_len;
+                    m2yij -= rint(m2yij / box_len) * box_len;
+                    m2zij -= rint(m2zij / box_len) * box_len; 
 
                 /*  //length conversion
                     xij = xij * box_len;
@@ -224,13 +259,13 @@ bool pos_macro_gen(){
                     dis_m1 = sqrt(pow(m1xij, 2) +pow(m1yij, 2) + pow(m1zij, 2));
                     dis_m2 = sqrt(pow(m2xij, 2) +pow(m2yij, 2) + pow(m2zij, 2));
 
-                    printf("dis:%lf dis_m1:%lf dis_m2:%lf\n", dis, dis_m1, dis_m2);
+                    //printf("dis:%lf dis_m1:%lf dis_m2:%lf\n", dis, dis_m1, dis_m2);
 
                     if(dis > (2. * radius) && dis_m1 > (macro_radius + radius) && dis_m2 > (macro_radius + radius)){
                         overlap = false;
                     }
                     else{
-                        printf("Overlapping ocurred! New position generated.\n");
+                        //printf("Overlapping ocurred! New position generated.\n");
                         pos_gen(pos);
                         j = -1;
                     }
@@ -253,22 +288,52 @@ bool pos_macro_gen(){
         
     }
 
-    printf("positions array\n");
+    /* printf("positions array\n");
     for(int i = 0; i < num_particles; i++){
         printf("x: %.10lf y:%.10lf z:%.10lf\n", positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
-    }
+    } */
 
 }
 
 bool pos_macro_read(){
 
-    FILE * macro_pos = fopen("pos_macro.in", "r");
+    FILE * macro_pos = fopen("positions.xyz", "r");
 
     if(macro_pos == (FILE*)NULL){
-        printf("No pos_macro.in file found!\n");
+        printf("No positions.xyz file found!\n");
         return false;
     }
     else{
+
+        char type;
+        double sum_valence = 0.;
+
+        fscanf(macro_pos, "%d\n", &num_particles);
+        fscanf(macro_pos, "Positions\n");
+
+        positions = (double*)malloc(num_particles * 3 * sizeof(double));
+
+        for(int i = 0; i < num_particles; i++){
+
+            fscanf(macro_pos, "%c\t%lf\t%lf\t%lf\n", &type, &positions[i * 3 + 0], &positions[i * 3 + 1], &positions[i * 3 + 2]);
+            
+            if(type == 'A'){
+                sum_valence += val_1;
+            }
+            else if(type == 'B'){
+                sum_valence += val_2;
+            }
+            else{
+                sum_valence += macro_valence;
+            }
+        }
+
+        if(sum_valence != 0.){
+            printf("Electroneutrality condition is not met!\n");
+            printf("***CHECK POSITION FILE!***\n"),
+            printf("Bad termination\n");
+            exit(1);
+        }
 
     }
 
