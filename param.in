@@ -23,11 +23,11 @@ Temperature = 298.0				        #Temperature in Kelvin(K)
 
 ### Macroion parameters ###
 
-Number of macroions = 0					#0: no macroion implementation
+Number of macroions = 2					#0: no macroion implementation
 Valence = 2.0
 Radius = 5.0
 Repulsive core distance = 1.0
-Position file generator = 1				#0 if you have the positions file
+Position file generator = 0				#0 if you have the positions file
 
 NOTES: 	If you set 1 macroion, the position will be at the box's center. 
 		2 macroions will be in the diagonal.

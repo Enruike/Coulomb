@@ -11,6 +11,7 @@ int main(){
     FILE* rhor_file;
     FILE* gr_file;
     FILE* pos_file;
+    FILE* macro_hist_file;
 
 
     if(!read_parameters()){
@@ -172,9 +173,32 @@ int main(){
 
     char rhor_file_name[100];
     char gr_file_name[100];
+    char macro_histo_file_name[100];
     double XR[dim_gr] = { 0. };
     double XRP[dim_gr] = { 0. };
     double bin_vol[dim_gr] = { 0. };
+
+    //Projection vector
+    double proj_vec[3] = { 0. };
+
+    //Diagonal vector
+    double diagonal[3] = { half_box };
+
+    //Projection magnitude
+    double mag_proj = sqrt( pow(diagonal[0], 2) + pow(diagonal[1], 2) + pow(diagonal[2], 2) );
+
+    //calculating diagonal grid dimension.
+    diag_grid = rint(mag_proj / delta_gr);
+
+    double XR_macro[diag_grid] = { 0. };
+
+    for(int i = 0; i < diag_grid; i++){
+        XR_macro[i] = (i + 0.5) * delta_gr;
+    }
+
+    //Histogram for macroion position
+    double macro_histo[diag_grid] = { 0. };
+    double macro_histo_temp[diag_grid] = { 0. };
 
     for(int i = 0; i < dim_gr; i++){
         XR[i] = (i + 0.5) * delta_gr;
@@ -604,6 +628,10 @@ int main(){
             /* Histograma */
 
             histogram_hr_tau(num_particles, positions, species_array, HR_temp);
+
+            if(macro_num != 0){
+                macro_histo_f(macro_histo_temp, &positions[(np - 1) * 3], diagonal, mag_proj);
+            }
             
             for(int i = 0; i < species; i++){
                 for(int j = 0; j < species; j++){
@@ -631,6 +659,20 @@ int main(){
 
                 write_gr_rhor(gr_file, gr_file_name, (int)tau, species, XR, GR);
                 write_gr_rhor(rhor_file, rhor_file_name, (int)tau, species, XR, RHOR);
+
+                if(macro_num != 0){
+                    for(int i = 0; i < diag_grid; i++){
+                        macro_histo[i] = macro_histo_temp[i] / tau;
+                        //printf("%lf ", macro_histo[i]);
+                    }
+
+                    snprintf(macro_histo_file_name, sizeof(macro_histo_file_name), "%d_macro_hist.out", (int)tau);
+
+                    macro_hist_file = fopen(macro_histo_file_name, "w");
+                    fclose(macro_hist_file);
+
+                    write_hist_macro_f(macro_hist_file, macro_histo_file_name, (int)tau, XR_macro, macro_histo);
+                }
 
                 /* Valores a 0 */
                 for(int i = 0; i < species; i++){

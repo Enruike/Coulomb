@@ -29,6 +29,7 @@ double eps_r; //Relative epsilon.
 double temp; //Temperature in Kelvin(K).
 double diameter; //                                             !!!(Check this diameter)!!!
 double delta_gr; //Delta Grid.
+double diag_grid; //Size of diagonal grid.
 bool macro_flag;
 int macro_num;
 double macro_valence;

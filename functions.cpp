@@ -609,3 +609,41 @@ void write_gr_rhor(FILE * file, char * file_name, int tau, int species, double *
     fclose(file);
 
 }
+
+void macro_histo_f(double * histo, double macro_pos[3], const double diagonal[3], const double mag){
+
+    double projection;
+    int bin;
+
+    projection = macro_pos[0] * diagonal[0] + macro_pos[0] * diagonal[0]\
+                    + macro_pos[0] * diagonal[0];
+    
+    projection /= mag;
+
+    bin = (int)(projection / delta_gr);
+
+    if(bin < diag_grid){
+        histo[bin] += 1.0;
+    }
+
+}
+
+void write_hist_macro_f(FILE * file, char * file_name, int tau, double * XR, double * histogram){
+    
+    file = fopen(file_name, "a");
+    
+
+    fprintf(file, "# %d\u03c4\n", tau);
+    fprintf(file, "# %d species\n", species);
+    fprintf(file, "# 1\t\t2\n");
+
+    fprintf(file, "# x\t\t1\t\tbin\n");
+
+    for(int i = 0; i < diag_grid; i++){
+
+        fprintf(file, "%lf\t%lf\t%d\n", XR[i], histogram[i], i);
+
+    }
+
+    fclose(file);
+}

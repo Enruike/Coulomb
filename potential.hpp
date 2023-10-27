@@ -64,3 +64,5 @@ extern void histogram_hr_tau(int num_particles, double * positions, short int * 
         double *** HR);
 extern void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau, unsigned int * atoms_per_specie, double * bin_vol);
 extern void write_gr_rhor(FILE * file, char * file_name, int tau, int species, double * XR, double *** gr_rhor);
+extern void macro_histo_f(double * histo, double macro_pos[3], const double diagonal[3], const double mag);
+extern void write_hist_macro_f(FILE * file, char * file_name, int tau, double * XR, double * histogram);

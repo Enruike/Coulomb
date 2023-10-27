@@ -23,6 +23,7 @@ extern double diff_c_red2;
 extern double d_rc; //Sigma for the rc potential.
 extern double delta_gr;
 extern int dim_gr;
+extern int diag_grid;
 extern int species;
 
 //Repulsive Core
@@ -56,3 +57,6 @@ void calculate_rhor_gr(double *** RHOR, double *** GR, double *** HR, double tau
 void write_gr_rhor(FILE * file, char * file_name, int tau, int species, double * XR, double *** gr_rhor);
 
 void pos_gen(double pos[3]);
+
+void macro_histo_f(double * histo, double macro_pos[3], const double diagonal[3], const double mag);
+void write_hist_macro_f(FILE * file, char * file_name, int tau, double * XR, double * histogram);
