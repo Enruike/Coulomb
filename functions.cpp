@@ -615,8 +615,8 @@ void macro_histo_f(double * histo, double macro_pos[3], const double diagonal[3]
     double projection;
     int bin;
 
-    projection = macro_pos[0] * diagonal[0] + macro_pos[0] * diagonal[0]\
-                    + macro_pos[0] * diagonal[0];
+    projection = macro_pos[0] * diagonal[0] + macro_pos[1] * diagonal[1]\
+                    + macro_pos[2] * diagonal[2];
     
     projection /= mag;
 
