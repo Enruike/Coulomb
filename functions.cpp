@@ -354,6 +354,39 @@ double new_pos_function(int indx, double dt, double * indx_positions, double new
     new_pos[0] = xi + fx * diff_c_red * dt + gx * sqrt(2. * diff_c_red2 * dt);
     new_pos[1] = yi + fy * diff_c_red * dt + gy * sqrt(2. * diff_c_red2 * dt);
     new_pos[2] = zi + fz * diff_c_red * dt + gz * sqrt(2. * diff_c_red2 * dt);
+
+    //if(indx == num_particles - 2)printf("orig x:%lf y:%lf z:%lf\n", new_pos[0], new_pos[1], new_pos[2]);
+    //For macroion attached to the spring
+    if(macro_num != 0 && indx == (num_particles - 2)){
+
+        double spring_x, spring_y, spring_z;
+        //Distance between the particle and spring attachment.
+        double spr_distance;
+        //Magnitude of the spring force.
+        double spr_force;
+
+        spring_x = new_pos[0] - positions[(num_particles - 2) * 3 + 0];
+        spring_y = new_pos[1] - positions[(num_particles - 2) * 3 + 1];
+        spring_z = new_pos[2] - positions[(num_particles - 2) * 3 + 2];
+
+        spr_distance = sqrt(pow(spring_x, 2) + pow(spring_y, 2) + pow(spring_z, 2));
+
+        spr_force = K_red * spr_distance;
+
+        new_pos[0] = xi + fx * (diff_c_red / 4.) * dt + gx * sqrt(2. * (diff_c_red2 / 16) * dt)\
+                    + (diff_c_red / 4.) / (K_boltzmann * temp * 1e20) * spr_force * (spring_x / spr_distance);
+        new_pos[1] = yi + fy * (diff_c_red / 4.) * dt + gy * sqrt(2. * (diff_c_red2 / 16) * dt)\
+                    + (diff_c_red / 4.) / (K_boltzmann * temp * 1e20) * spr_force * (spring_y / spr_distance);
+        new_pos[2] = zi + fz * (diff_c_red / 4.) * dt + gz * sqrt(2. * (diff_c_red2 / 16) * dt)\
+                    + (diff_c_red / 4.) / (K_boltzmann * temp * 1e20) * spr_force * (spring_z / spr_distance);
+
+        //printf("Spring force is %lf and indx is %d", spr_force, indx);
+        //printf("kb:%lf temp:%lf\n", K_boltzmann, temp);
+        //printf("dif red %lf\n", diff_c_red / 4);
+        //printf("force:%lf, Kboltz * t %.15lf\n", spr_force, K_boltzmann * temp);
+        //printf("mod x:%lf y:%lf z:%lf\n", new_pos[0], new_pos[1], new_pos[2]);
+
+    }
     //printf("xi is %.6e\n", xi);
     //printf("Part 1 is %.6e\n", (diff_c / 1.e-10) * dt);
     //printf("diff_C 2 is %lf\n", diff_c_red2);

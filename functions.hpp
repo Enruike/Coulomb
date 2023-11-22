@@ -25,6 +25,11 @@ extern double delta_gr;
 extern int dim_gr;
 extern int diag_grid;
 extern int species;
+extern int macro_num;
+extern double K_boltzmann;
+
+extern double K_red;
+extern double temp;
 
 //Repulsive Core
 double energy_rc_i_all(int indx, int np_total);

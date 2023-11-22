@@ -37,6 +37,9 @@ double macro_radius;
 double macro_rc;
 bool file_pos_gen;
 
+//Spring constants.
+double K_spring = 1e-11; // Spring Constant [N/m]
+double K_red = K_spring / 1e-10; // Reduced Spring Constant [N/Angstrom]
 
 //Dynamic array memory
 double* positions;
