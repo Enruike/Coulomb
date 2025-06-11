@@ -182,7 +182,10 @@ int main(){
     double proj_vec[3] = { 0. };
 
     //Diagonal vector
-    double diagonal[3] = { half_box };
+    double diagonal[3] = { 0. };
+    diagonal[0] = half_box;
+    diagonal[1] = half_box;
+    diagonal[2] = half_box;
 
     //Projection magnitude
     double mag_proj = sqrt( pow(diagonal[0], 2) + pow(diagonal[1], 2) + pow(diagonal[2], 2) );

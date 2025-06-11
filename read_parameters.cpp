@@ -27,7 +27,7 @@ bool read_parameters(){
         fscanf(param, "Max time steps = %d #Max number of steps\n", &max_time_steps);
         fscanf(param, "Energy steps = %d #Saving steps for Energy and MSD file\n", &msd_steps);
         fscanf(param, "Histogram steps = %d #Steps for calculating histogram\n", &histo_steps);
-        fscanf(param, "tau steps = %d #Steps for calculating g(r) and rho(r)\n0", &tau_steps);
+        fscanf(param, "tau steps = %d #Steps for calculating g(r) and rho(r)\n", &tau_steps);
         fscanf(param, "Infinite disolution = %d #0:Homogeneous or 1:Inhomogeneous\n", &disol);
         fscanf(param, "Epsilon r = %lf #Epsilon for electrolyte\n", &eps_r);
         fscanf(param, "Temperature = %lf #Temperature in Kelvin(K)\n\n", &temp);
